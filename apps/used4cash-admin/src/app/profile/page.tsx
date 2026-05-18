@@ -75,10 +75,10 @@ export default function ProfilePage() {
     const activeOrder = tickets[0];
     const selectedTicket = selectedTicketId ? tickets.find((t: any) => t.id === selectedTicketId) : null;
 
-    const handleAcceptOffer = async (ticketId: string) => {
+    const handleAcceptOffer = async (bidId: string) => {
         setIsAccepting(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/tickets/${ticketId}/accept-offer`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/bids/${bidId}/accept`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -413,9 +413,21 @@ function TicketDetail({ ticket, onBack, onAcceptOffer, onRejectOffer, onApproveV
 }) {
     const device = ticket.device;
     const specs = device?.specs || {};
-    const isPricingEstimated = ticket.status === 'PRICING_ESTIMATED';
+    const isPricingEstimated = ticket.status === 'PRICING_ESTIMATED' || ticket.status === 'OPEN';
     const isResolved = ticket.status === 'RESOLVED';
     const hasEstimate = device?.estimatedVal != null;
+
+    const [bids, setBids] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (ticket.id) {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/bids/ticket/${ticket.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) setBids(data.bids);
+                });
+        }
+    }, [ticket.id]);
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
@@ -503,7 +515,7 @@ function TicketDetail({ ticket, onBack, onAcceptOffer, onRejectOffer, onApproveV
                         <div className="p-2.5 bg-emerald-500/10 rounded-xl">
                             <DollarSign className="w-5 h-5 text-emerald-400" />
                         </div>
-                        <h4 className="font-bold text-white">Pricing</h4>
+                        <h4 className="font-bold text-white">Pricing & Bids</h4>
                     </div>
                     <div className="space-y-4">
                         {specs.askedPrice && (
@@ -513,10 +525,10 @@ function TicketDetail({ ticket, onBack, onAcceptOffer, onRejectOffer, onApproveV
                             </div>
                         )}
 
-                        <div className="bg-slate-950 rounded-xl p-5 text-center">
-                            <p className="text-slate-500 text-xs uppercase tracking-wider font-bold mb-2">AI Market Estimate</p>
+                        <div className="bg-slate-950 border border-slate-800 rounded-xl p-5 text-center">
+                            <p className="text-slate-500 text-xs uppercase tracking-wider font-bold mb-2">AI Market Baseline</p>
                             {hasEstimate ? (
-                                <p className="text-4xl font-black text-emerald-400">
+                                <p className="text-2xl font-bold text-slate-300">
                                     £{device.estimatedVal.toLocaleString()}
                                 </p>
                             ) : (
@@ -527,45 +539,57 @@ function TicketDetail({ ticket, onBack, onAcceptOffer, onRejectOffer, onApproveV
                             )}
                         </div>
 
-                        {specs.estimatedPrice && specs.askedPrice && (
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-slate-500">Difference</span>
-                                <span className={`font-bold ${Number(specs.askedPrice) > (device?.estimatedVal || 0) ? 'text-amber-400' : 'text-emerald-400'}`}>
-                                    {Number(specs.askedPrice) > (device?.estimatedVal || 0) ? '+' : '-'}£{Math.abs(Number(specs.askedPrice) - (device?.estimatedVal || 0))}
-                                </span>
-                            </div>
-                        )}
+                        {/* Live Bids */}
+                        <div className="pt-4">
+                            <h5 className="text-sm font-bold text-slate-300 mb-3">Live Vendor Bids ({bids.length})</h5>
+                            {bids.length === 0 ? (
+                                <p className="text-slate-500 text-sm text-center py-4 bg-slate-950 rounded-xl">Waiting for vendors to bid...</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {bids.map(bid => (
+                                        <div key={bid.id} className="flex justify-between items-center bg-slate-800/50 p-3 rounded-lg border border-slate-700">
+                                            <div>
+                                                <p className="font-semibold text-white">{bid.vendor?.name || 'Vendor'}</p>
+                                                <p className="text-xs text-slate-400">Trust Score: {bid.vendor?.trustScore || 100}</p>
+                                            </div>
+                                            <div className="text-right flex items-center gap-3">
+                                                <span className="font-bold text-emerald-400 text-lg">£{bid.amount}</span>
+                                                {isPricingEstimated && (
+                                                    <button 
+                                                        onClick={() => onAcceptOffer(bid.id)}
+                                                        disabled={isAccepting}
+                                                        className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                                                    >
+                                                        {isAccepting ? '...' : 'Accept'}
+                                                    </button>
+                                                )}
+                                                {bid.status === 'ACCEPTED' && (
+                                                    <span className="bg-emerald-500/20 text-emerald-400 px-3 py-1 text-xs font-bold rounded-lg border border-emerald-500/30">WON</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
-                {isPricingEstimated && hasEstimate && (
-                    <>
-                        <button
-                            onClick={() => onAcceptOffer(ticket.id)}
-                            disabled={isAccepting || isRejecting}
-                            className="flex-[2] bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 text-white rounded-xl px-6 py-4 font-bold text-base transition-all shadow-lg shadow-emerald-600/20 active:scale-[0.98] flex items-center justify-center gap-2"
-                        >
-                            {isAccepting ? (
-                                <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
-                            ) : (
-                                <><CheckCircle2 className="w-5 h-5" /> Accept Offer — £{device.estimatedVal}</>
-                            )}
-                        </button>
-                        <button
-                            onClick={() => onRejectOffer(ticket.id)}
-                            disabled={isAccepting || isRejecting}
-                            className="flex-1 bg-slate-800 hover:bg-red-500/20 hover:text-red-400 disabled:bg-slate-800 disabled:text-slate-500 text-slate-300 border border-transparent hover:border-red-500/30 rounded-xl px-6 py-4 font-bold text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                        >
-                            {isRejecting ? (
-                                <><Loader2 className="w-5 h-5 animate-spin" /> Rejecting...</>
-                            ) : (
-                                "Reject Offer"
-                            )}
-                        </button>
-                    </>
+                {isPricingEstimated && (
+                    <button
+                        onClick={() => onRejectOffer(ticket.id)}
+                        disabled={isAccepting || isRejecting}
+                        className="flex-1 bg-slate-800 hover:bg-red-500/20 hover:text-red-400 disabled:bg-slate-800 disabled:text-slate-500 text-slate-300 border border-transparent hover:border-red-500/30 rounded-xl px-6 py-4 font-bold text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    >
+                        {isRejecting ? (
+                            <><Loader2 className="w-5 h-5 animate-spin" /> Cancelling...</>
+                        ) : (
+                            "Cancel Ticket"
+                        )}
+                    </button>
                 )}
 
                 {ticket.status === 'ENGINEER_VISIT_SCHEDULED' && (

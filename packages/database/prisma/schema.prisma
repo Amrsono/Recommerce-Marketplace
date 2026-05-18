@@ -19,6 +19,8 @@ model User {
   messagesReceived Message[]      @relation("ReceivedMessages")
   paymentMethods  PaymentMethod[]
   notifications   Notification[]
+  bids            Bid[]           @relation("VendorBids")
+  wonTickets      Ticket[]        @relation("WinningVendor")
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 }
@@ -50,6 +52,9 @@ model Ticket {
   scheduledVisit DateTime?  // Admin proposed date/time
   visitStatus  VisitStatus? @default(PENDING)
   messages     Message[]
+  bids         Bid[]
+  winningVendorId String?
+  winningVendor   User?     @relation("WinningVendor", fields: [winningVendorId], references: [id])
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 }
@@ -99,6 +104,7 @@ enum Role {
   CUSTOMER
   ENGINEER
   ADMIN
+  VENDOR
 }
 
 enum TicketStatus {
@@ -113,5 +119,23 @@ model SystemSettings {
   id        String   @id @default(uuid())
   key       String   @unique
   value     String
+  updatedAt DateTime @updatedAt
+}
+
+enum BidStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Bid {
+  id        String   @id @default(uuid())
+  amount    Float
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  vendorId  String
+  vendor    User     @relation("VendorBids", fields: [vendorId], references: [id])
+  status    BidStatus @default(PENDING)
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
