@@ -29,12 +29,12 @@ export default function ContactPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] text-slate-200 relative overflow-hidden">
+        <div className="min-h-screen relative overflow-hidden">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-blue-600/15 blur-[130px] rounded-full pointer-events-none -z-10" />
             <div className="absolute bottom-1/3 right-0 w-[400px] h-[400px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none -z-10" />
 
             {/* Nav */}
-            <nav className="container mx-auto px-6 py-6 flex justify-between items-center border-b border-slate-800/50 sticky top-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-xl">
+            <nav className="container mx-auto px-6 py-6 flex justify-between items-center border-b border-slate-800/50 sticky top-0 z-50 bg-black/40 backdrop-blur-xl">
                 <Link href="/" className="flex items-center gap-3">
                     <div className="relative w-9 h-9 overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
                         <Image src="/logo.png" alt="used4cash" fill className="object-contain" />

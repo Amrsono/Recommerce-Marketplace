@@ -75,6 +75,12 @@ export default function LandingPage() {
             )}
           </div>
 
+          {/* Page Links */}
+          <div className="hidden md:flex items-center gap-5 text-sm font-medium text-slate-400">
+            <Link href="/about" className="hover:text-white transition-colors">About</Link>
+            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+          </div>
+
           {user ? (
             <div className="flex items-center gap-4">
               <span className="text-sm text-slate-400 hidden md:inline-block">
