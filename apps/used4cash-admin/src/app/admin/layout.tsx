@@ -24,12 +24,12 @@ export default function AdminLayout({
                         <div className="relative w-8 h-8 overflow-hidden rounded-md border border-slate-700 bg-slate-950">
                             <Image 
                                 src="/logo.png" 
-                                alt="Make Use Logo" 
+                                alt="used4cash Logo" 
                                 fill 
                                 className="object-contain"
                             />
                         </div>
-                        <span className="font-bold text-xl tracking-tight">Make Use</span>
+                        <span className="font-bold text-xl tracking-tight">used4cash</span>
                     </div>
                     <nav className="flex-1 space-y-2">
                         <Link href="/" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors text-slate-300 hover:text-white mb-2">

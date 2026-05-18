@@ -2,15 +2,15 @@
 # https://docs.render.com/blueprint-spec
 
 databases:
-  - name: makeuse-db
+  - name: used4cash-db
     plan: free
-    databaseName: makeuse
-    user: makeuse
+    databaseName: used4cash
+    user: used4cash
 
 services:
   # ── Express API ──────────────────────────────────────────
   - type: web
-    name: makeuse-api
+    name: used4cash-api
     runtime: node
     plan: free
     rootDir: .
@@ -25,14 +25,14 @@ services:
         value: production
       - key: DATABASE_URL
         fromDatabase:
-          name: makeuse-db
+          name: used4cash-db
           property: connectionString
       - key: CORS_ORIGIN
-        value: "https://makeuse-web.onrender.com" # Should match the web-admin service URL
+        value: "https://used4cash-web.onrender.com" # Should match the web-admin service URL
 
   # ── Next.js Frontend ────────────────────────────────────
   - type: web
-    name: makeuse-web
+    name: used4cash-web
     runtime: node
     plan: free
     rootDir: apps/web-admin
@@ -43,4 +43,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_URL
-        value: "https://makeuse-api.onrender.com/api"
+        value: "https://used4cash-api.onrender.com/api"

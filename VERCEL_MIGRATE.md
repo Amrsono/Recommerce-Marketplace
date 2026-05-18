@@ -6,14 +6,14 @@ This document summarizes the steps to migrate the Web and API apps to Vercel usi
 
 You need to create two separate projects in Vercel. Both will point to the same GitHub repository.
 
-### Project A: `makeuse-web` (Frontend)
+### Project A: `used4cash-web` (Frontend)
 1.  **Import** the repository in Vercel.
-2.  **Project Name**: `makeuse-web`
-3.  **Root Directory**: `apps/makeuse-admin` (Important!)
+2.  **Project Name**: `used4cash-web`
+3.  **Root Directory**: `apps/used4cash-admin` (Important!)
 4.  **Framework Preset**: `Next.js`
 5.  **Build Command**: `npm run build`
 6.  **Environment Variables**:
-    *   `NEXT_PUBLIC_API_URL`: The URL of Project B (e.g., `https://makeuse-api.vercel.app/api`)
+    *   `NEXT_PUBLIC_API_URL`: The URL of Project B (e.g., `https://used4cash-api.vercel.app/api`)
     *   `DATABASE_URL`: Your Neon/Postgres connection string (Required for `prisma generate`)
 
 ---
@@ -21,14 +21,14 @@ You need to create two separate projects in Vercel. Both will point to the same 
 ## 2. Monorepo Configuration (Vercel Dashboard)
 To prevent the "Prisma schema not found" error during build:
 1.  Go to **Settings** > **General**.
-2.  Locate **Root Directory** and ensure it is set to `apps/makeuse-admin`.
+2.  Locate **Root Directory** and ensure it is set to `apps/used4cash-admin`.
 3.  **CRITICAL**: Ensure that **"Include source files from outside of the Root Directory"** is enabled. This allows the build process to reach `../../packages/database`.
 
 ---
 
-### Project B: `makeuse-api` (Backend)
+### Project B: `used4cash-api` (Backend)
 1.  **Import** the repository again in Vercel.
-2.  **Project Name**: `makeuse-api`
+2.  **Project Name**: `used4cash-api`
 3.  **Root Directory**: `apps/api` (Important!)
 4.  **Framework Preset**: `Other` (Vercel will detect `vercel.json`)
 5.  **Build Command**: `npm run build`
@@ -43,7 +43,7 @@ To prevent the "Prisma schema not found" error during build:
 1.  In the Vercel Dashboard, go to the **Storage** tab.
 2.  Click **Create** > **Postgres**.
 3.  Choose a region close to you.
-4.  **Connect** the database to **both** `makeuse-web` and `makeuse-api` projects. This automatically injects the `POSTGRES_*` environment variables.
+4.  **Connect** the database to **both** `used4cash-web` and `used4cash-api` projects. This automatically injects the `POSTGRES_*` environment variables.
 
 ---
 

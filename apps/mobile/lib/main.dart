@@ -6,20 +6,20 @@ import 'core/theme/theme.dart';
 void main() {
   runApp(
     const ProviderScope(
-      child: MakeUseApp(),
+      child: Used4CashApp(),
     ),
   );
 }
 
-class MakeUseApp extends StatelessWidget {
-  const MakeUseApp({super.key});
+class Used4CashApp extends StatelessWidget {
+  const Used4CashApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Make Use',
-      theme: MakeUseTheme.lightTheme,
-      darkTheme: MakeUseTheme.darkTheme,
+      title: 'used4cash',
+      theme: Used4CashTheme.lightTheme,
+      darkTheme: Used4CashTheme.darkTheme,
       themeMode: ThemeMode.system,
       home: const ProductSubmissionWizard(),
     );

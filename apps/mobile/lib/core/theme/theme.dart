@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MakeUseTheme {
+class Used4CashTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,

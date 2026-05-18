@@ -1,9 +1,9 @@
 {
-  "name": "makeuse-marketplace",
+  "name": "used4cash-marketplace",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "apps/makeuse-admin",
+    "apps/used4cash-admin",
     "apps/api",
     "apps/ai-pricing",
     "apps/mobile",

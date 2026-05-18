@@ -4,7 +4,7 @@ Bringing the **Make Use** Flutter app (`apps/mobile`) from development to a prod
 
 ## 1. Developer Account & Basics
 * **Google Play Console Setup:** Create a [Google Play Developer account](https://play.google.com/console/about/). It requires a one-time registration fee of $25.
-* **App Identifier:** Ensure the app has a unique Android Package Name (e.g., `com.makeuse.marketplace`). This is set in the `android/app/build.gradle` file under `applicationId`.
+* **App Identifier:** Ensure the app has a unique Android Package Name (e.g., `com.used4cash.marketplace`). This is set in the `android/app/build.gradle` file under `applicationId`.
 
 ## 2. Branding (Icons and Assets)
 Before publishing, the default Flutter icons need to be replaced with the custom **Make Use** branding.

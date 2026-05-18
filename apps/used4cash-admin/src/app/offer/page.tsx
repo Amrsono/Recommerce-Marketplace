@@ -153,12 +153,12 @@ export default function OfferJourney() {
                     <div className="relative w-8 h-8 overflow-hidden rounded-md border border-slate-700 bg-slate-950">
                         <Image 
                             src="/logo.png" 
-                            alt="Make Use Logo" 
+                            alt="used4cash Logo" 
                             fill 
                             className="object-contain"
                         />
                     </div>
-                    Make Use
+                    used4cash
                 </Link>
                 {step < 6 && (
                     <div className="flex items-center gap-4">

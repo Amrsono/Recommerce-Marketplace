@@ -42,27 +42,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
         checkConnectivity();
 
-        // Migration: Migrate legacy recommerce keys to makeuse
-        const legacyUser = localStorage.getItem("recommerce_user");
-        const legacyToken = localStorage.getItem("recommerce_token");
-        if (legacyUser && legacyToken) {
-            localStorage.setItem("makeuse_user", legacyUser);
-            localStorage.setItem("makeuse_token", legacyToken);
+        // Migration: Migrate legacy recommerce/makeuse keys to used4cash
+        const legacyRecommerceUser = localStorage.getItem("recommerce_user");
+        const legacyRecommerceToken = localStorage.getItem("recommerce_token");
+        const legacyMakeuseUser = localStorage.getItem("makeuse_user");
+        const legacyMakeuseToken = localStorage.getItem("makeuse_token");
+
+        if (legacyRecommerceUser && legacyRecommerceToken) {
+            localStorage.setItem("used4cash_user", legacyRecommerceUser);
+            localStorage.setItem("used4cash_token", legacyRecommerceToken);
             localStorage.removeItem("recommerce_user");
             localStorage.removeItem("recommerce_token");
+        } else if (legacyMakeuseUser && legacyMakeuseToken) {
+            localStorage.setItem("used4cash_user", legacyMakeuseUser);
+            localStorage.setItem("used4cash_token", legacyMakeuseToken);
+            localStorage.removeItem("makeuse_user");
+            localStorage.removeItem("makeuse_token");
         }
 
         // Hydrate auth state from localStorage
-        const storedUser = localStorage.getItem("makeuse_user");
-        const storedToken = localStorage.getItem("makeuse_token");
+        const storedUser = localStorage.getItem("used4cash_user");
+        const storedToken = localStorage.getItem("used4cash_token");
 
         if (storedUser && storedToken) {
             try {
                 setUser(JSON.parse(storedUser));
             } catch (e) {
                 console.error("Failed to parse stored user", e);
-                localStorage.removeItem("makeuse_user");
-                localStorage.removeItem("makeuse_token");
+                localStorage.removeItem("used4cash_user");
+                localStorage.removeItem("used4cash_token");
             }
         }
         setIsLoading(false);
@@ -81,8 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (data.success) {
                 const userData = data.user;
                 setUser(userData);
-                localStorage.setItem("makeuse_user", JSON.stringify(userData));
-                localStorage.setItem("makeuse_token", data.token);
+                localStorage.setItem("used4cash_user", JSON.stringify(userData));
+                localStorage.setItem("used4cash_token", data.token);
 
                 const dest = userData.role === "ADMIN" ? "/admin" : (redirectTo || "/profile");
                 router.push(dest);
@@ -108,8 +116,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (data.success) {
                 const userData = data.user;
                 setUser(userData);
-                localStorage.setItem("makeuse_user", JSON.stringify(userData));
-                localStorage.setItem("makeuse_token", data.token);
+                localStorage.setItem("used4cash_user", JSON.stringify(userData));
+                localStorage.setItem("used4cash_token", data.token);
 
                 const dest = userData.role === "ADMIN" ? "/admin" : (redirectTo || "/assess");
                 router.push(dest);
@@ -124,8 +132,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = async () => {
         setUser(null);
-        localStorage.removeItem("makeuse_user");
-        localStorage.removeItem("makeuse_token");
+        localStorage.removeItem("used4cash_user");
+        localStorage.removeItem("used4cash_token");
         router.push("/");
     };
 

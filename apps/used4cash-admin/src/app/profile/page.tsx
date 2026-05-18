@@ -144,12 +144,12 @@ export default function ProfilePage() {
                         <div className="relative w-8 h-8 overflow-hidden rounded-md border border-slate-700 bg-slate-950">
                             <Image 
                                 src="/logo.png" 
-                                alt="Make Use Logo" 
+                                alt="used4cash Logo" 
                                 fill 
                                 className="object-contain"
                             />
                         </div>
-                        <span className="font-bold text-lg text-white">Make Use</span>
+                        <span className="font-bold text-lg text-white">used4cash</span>
                     </Link>
                     <div className="flex items-center gap-4">
                         <button className="p-2 text-slate-400 hover:text-white transition-colors relative">

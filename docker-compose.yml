@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: makeuse
+      POSTGRES_DB: used4cash
     ports:
       - "5432:5432"
     volumes:

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../db';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'recommerce_secret_key_change_me';
+const JWT_SECRET = process.env.JWT_SECRET || 'used4cash_secret_key_change_me';
 
 // Registration
 router.post('/register', async (req: Request, res: Response) => {
