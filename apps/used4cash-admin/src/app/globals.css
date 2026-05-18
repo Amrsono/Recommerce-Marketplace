@@ -19,3 +19,39 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Theme overrides for light mode */
+[data-theme="light"] .text-white {
+    color: #0f172a !important;
+}
+[data-theme="light"] .text-slate-100 {
+    color: #0f172a !important;
+}
+[data-theme="light"] .text-slate-200 {
+    color: #1e293b !important;
+}
+[data-theme="light"] .text-slate-300 {
+    color: #334155 !important;
+}
+[data-theme="light"] .text-slate-400 {
+    color: #475569 !important;
+}
+
+/* Keep text white on primary colored buttons/badges */
+[data-theme="light"] .bg-blue-600,
+[data-theme="light"] .bg-blue-500,
+[data-theme="light"] .bg-violet-600,
+[data-theme="light"] .bg-emerald-600 {
+    color: #ffffff !important;
+}
+[data-theme="light"] .bg-blue-600 *,
+[data-theme="light"] .bg-blue-500 *,
+[data-theme="light"] .bg-violet-600 *,
+[data-theme="light"] .bg-emerald-600 * {
+    color: #ffffff !important;
+}
+
+/* Fix for gradient text that becomes invisible on white */
+[data-theme="light"] .text-transparent.bg-clip-text.bg-gradient-to-b.from-white {
+    background-image: linear-gradient(to bottom, #0f172a, #475569) !important;
+}

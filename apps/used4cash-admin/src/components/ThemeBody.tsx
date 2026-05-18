@@ -11,7 +11,10 @@ const GLOBAL_THEME_CLASSES = {
 export default function ThemeBody({ children, className }: { children: React.ReactNode; className?: string }) {
     const { theme } = useAdminTheme();
     return (
-        <div className={`${GLOBAL_THEME_CLASSES[theme]} min-h-screen transition-colors duration-300 selection:bg-blue-500/30 selection:text-blue-100 ${className ?? ""}`}>
+        <div
+            data-theme={theme}
+            className={`${GLOBAL_THEME_CLASSES[theme]} min-h-screen transition-colors duration-300 selection:bg-blue-500/30 selection:text-blue-100 ${className ?? ""}`}
+        >
             {children}
         </div>
     );
