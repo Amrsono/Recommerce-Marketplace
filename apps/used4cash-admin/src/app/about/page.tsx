@@ -19,7 +19,7 @@ const values = [
 ];
 
 const team = [
-    { name: "Amr Sono", role: "Founder & CEO", initials: "AS", gradient: "from-blue-500 to-purple-600" },
+    { name: "Grand Minds Technology", role: "Founder & CEO", initials: "GM", gradient: "from-blue-500 to-purple-600" },
     { name: "AI Pricing Engine", role: "Chief Valuation Officer", initials: "AI", gradient: "from-emerald-500 to-cyan-600" },
     { name: "Vendor Network", role: "500+ Verified Partners", initials: "VN", gradient: "from-orange-500 to-amber-600" },
 ];
