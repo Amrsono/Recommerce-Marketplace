@@ -9,6 +9,7 @@ import authRouter from './routes/auth';
 import devicesRouter from './routes/devices';
 import profileRouter from './routes/profile';
 import chatRouter from './routes/chat';
+import settingsRouter from './routes/settings';
 import bcrypt from 'bcryptjs';
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/devices', devicesRouter);
 app.use('/api/profile', profileRouter);
 app.use('/api/chat', chatRouter);
+app.use('/api/settings', settingsRouter);
 
 app.get('/api/tickets', async (req, res) => {
     try {

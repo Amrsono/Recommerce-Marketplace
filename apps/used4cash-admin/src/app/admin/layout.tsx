@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Shield, LayoutDashboard, KanbanSquare, LogOut, Home, MessageSquare } from 'lucide-react';
+import { Shield, LayoutDashboard, KanbanSquare, LogOut, Home, MessageSquare, Settings } from 'lucide-react';
 import AdminGuard from '@/components/AdminGuard';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
@@ -47,6 +47,10 @@ export default function AdminLayout({
                         <Link href="/admin/chat" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname === '/admin/chat' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white'}`}>
                             <MessageSquare className="w-5 h-5" />
                             Support Chat
+                        </Link>
+                        <Link href="/admin/settings" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname === '/admin/settings' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white'}`}>
+                            <Settings className="w-5 h-5" />
+                            Settings
                         </Link>
                     </nav>
 
