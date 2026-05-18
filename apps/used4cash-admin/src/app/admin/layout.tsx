@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Shield, LayoutDashboard, KanbanSquare, LogOut, Home, MessageSquare, Settings } from 'lucide-react';
+import { LayoutDashboard, KanbanSquare, LogOut, Home, MessageSquare, Settings } from 'lucide-react';
 import AdminGuard from '@/components/AdminGuard';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
-import { ThemeProvider, useAdminTheme } from '@/contexts/ThemeContext';
+import { useAdminTheme } from '@/contexts/ThemeContext';
 
-function AdminLayoutInner({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const { logout, user } = useAuth();
     const pathname = usePathname();
     const { config } = useAdminTheme();
@@ -70,10 +70,3 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     );
 }
 
-export default function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-    return (
-        <ThemeProvider>
-            <AdminLayoutInner>{children}</AdminLayoutInner>
-        </ThemeProvider>
-    );
-}

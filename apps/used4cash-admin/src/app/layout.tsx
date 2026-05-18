@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import ThemeBody from "@/components/ThemeBody";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,13 +19,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className={`${inter.className} bg-[#0A0A0A] text-slate-50 min-h-screen selection:bg-blue-500/30 selection:text-blue-100`}>
-        <LanguageProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </LanguageProvider>
+    <html lang="en" className="scroll-smooth">
+      <body className={inter.className}>
+        <ThemeProvider>
+          <ThemeBody>
+            <LanguageProvider>
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+            </LanguageProvider>
+          </ThemeBody>
+        </ThemeProvider>
       </body>
     </html>
   );
