@@ -45,6 +45,9 @@ app.get('/api/tickets', async (req, res) => {
             status: ticket.status,
             slaDeadline: ticket.slaDeadline.toISOString(),
             isUrgent: ticket.isUrgent || (new Date(ticket.slaDeadline).getTime() - new Date().getTime() < 12 * 60 * 60 * 1000),
+            estimatedVal: ticket.device.estimatedVal,
+            condition: ticket.device.condition,
+            specs: ticket.device.specs,
         }));
         res.json({ success: true, tickets: formattedTickets });
     } catch (error) {

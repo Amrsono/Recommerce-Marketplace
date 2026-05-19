@@ -4,6 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Gavel, DollarSign, Smartphone, Clock, CheckCircle } from 'lucide-react';
 
+const getTimeLeft = (deadlineStr: string) => {
+    const diff = new Date(deadlineStr).getTime() - new Date().getTime();
+    if (diff <= 0) return 'Expired';
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+};
+
 export default function VendorDashboard() {
     const { user } = useAuth();
     const [tickets, setTickets] = useState<any[]>([]);
@@ -99,23 +107,32 @@ export default function VendorDashboard() {
                                     </div>
                                     <div className="text-right">
                                         <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">AI Baseline</p>
-                                        <p className="text-xl font-bold text-green-400">$850.00</p>
+                                        <p className="text-xl font-bold text-green-400">${ticket.estimatedVal || '0.00'}</p>
                                     </div>
                                 </div>
                                 
                                 <div className="space-y-3 mb-6 bg-slate-950/50 p-4 rounded-lg border border-slate-800/50">
                                     <div className="flex justify-between text-sm">
                                         <span className="text-slate-400">Condition</span>
-                                        <span className="font-medium text-white">Mint</span>
+                                        <span className="font-medium text-white">{ticket.condition || 'Good'}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-slate-400">Storage</span>
-                                        <span className="font-medium text-white">256GB</span>
+                                        <span className="font-medium text-white">
+                                            {(() => {
+                                                try {
+                                                    const specs = typeof ticket.specs === 'string' ? JSON.parse(ticket.specs) : ticket.specs;
+                                                    return specs?.storage || '128GB';
+                                                } catch (e) {
+                                                    return '128GB';
+                                                }
+                                            })()}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-slate-400">Time left</span>
                                         <span className="font-medium text-orange-400 flex items-center gap-1">
-                                            <Clock className="w-3 h-3" /> 23h 45m
+                                            <Clock className="w-3 h-3" /> {getTimeLeft(ticket.slaDeadline)}
                                         </span>
                                     </div>
                                 </div>
