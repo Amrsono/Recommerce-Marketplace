@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 import { 
     User as UserIcon, 
     Settings, 
@@ -46,6 +47,7 @@ function statusColor(status: string) {
 
 export default function ProfilePage() {
     const { user } = useAuth();
+    const router = useRouter();
     const [profileData, setProfileData] = useState<any>(null);
     const [activeTab, setActiveTab] = useState<'orders' | 'chat' | 'payments'>('orders');
     const [isLoading, setIsLoading] = useState(true);
@@ -66,10 +68,21 @@ export default function ProfilePage() {
     };
 
     useEffect(() => {
+        if (user) {
+            if (user.role === 'VENDOR') {
+                router.push('/vendor');
+            } else if (user.role === 'ADMIN') {
+                router.push('/admin');
+            }
+        }
+    }, [user, router]);
+
+    useEffect(() => {
         fetchProfile();
     }, [user]);
 
     if (!user) return <div className="p-8 text-white">Please sign in...</div>;
+    if (user.role === 'VENDOR' || user.role === 'ADMIN') return null;
 
     const tickets = profileData?.tickets || [];
     const activeOrder = tickets[0];

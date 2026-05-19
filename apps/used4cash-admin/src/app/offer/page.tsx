@@ -165,7 +165,7 @@ export default function OfferJourney() {
                         <div className="text-sm font-medium text-slate-400 hidden sm:block">
                             Step {step} of 5
                         </div>
-                        <Link href="/profile" className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/20 border border-white/5">
+                        <Link href={user?.role === "ADMIN" ? "/admin" : (user?.role === "VENDOR" ? "/vendor" : "/profile")} className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/20 border border-white/5">
                             {user?.name?.[0]}
                         </Link>
                     </div>
@@ -518,10 +518,10 @@ export default function OfferJourney() {
                                 : " Expect an email shortly with the exact delivery label details."}
                         </p>
                         <div className="flex flex-col gap-3">
-                            <Link
-                                href="/profile"
-                                className="bg-slate-800 hover:bg-slate-700 text-white rounded-full px-6 py-3 font-semibold transition-colors"
-                            >
+                             <Link
+                                 href={user?.role === "ADMIN" ? "/admin" : (user?.role === "VENDOR" ? "/vendor" : "/profile")}
+                                 className="bg-slate-800 hover:bg-slate-700 text-white rounded-full px-6 py-3 font-semibold transition-colors"
+                             >
                                 Track your order
                             </Link>
                             <Link

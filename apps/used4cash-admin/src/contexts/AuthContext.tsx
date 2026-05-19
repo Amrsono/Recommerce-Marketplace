@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 localStorage.setItem("used4cash_user", JSON.stringify(userData));
                 localStorage.setItem("used4cash_token", data.token);
 
-                const dest = userData.role === "ADMIN" ? "/admin" : (redirectTo || "/profile");
+                const dest = userData.role === "ADMIN" ? "/admin" : (userData.role === "VENDOR" ? "/vendor" : (redirectTo || "/profile"));
                 router.push(dest);
             } else {
                 throw new Error(data.error || "Login failed");
@@ -119,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 localStorage.setItem("used4cash_user", JSON.stringify(userData));
                 localStorage.setItem("used4cash_token", data.token);
 
-                const dest = userData.role === "ADMIN" ? "/admin" : (redirectTo || "/assess");
+                const dest = userData.role === "ADMIN" ? "/admin" : (userData.role === "VENDOR" ? "/vendor" : (redirectTo || "/assess"));
                 router.push(dest);
             } else {
                 throw new Error(data.error || "Registration failed");

@@ -86,10 +86,10 @@ export default function LandingPage() {
               <span className="text-sm text-slate-400 hidden md:inline-block">
                 {t('navWelcome')}<span className="text-slate-200 font-medium">{user.name}</span>
               </span>
-              <Link href={user.role === "ADMIN" ? "/admin" : "/profile"} className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm font-medium transition-all shadow-lg hover:shadow-blue-500/25">
-                {user.role === "ADMIN" ? t('navDashboard') : t('navAccount')}
+              <Link href={user.role === "ADMIN" ? "/admin" : (user.role === "VENDOR" ? "/vendor" : "/profile")} className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm font-medium transition-all shadow-lg hover:shadow-blue-500/25">
+                {user.role === "ADMIN" || user.role === "VENDOR" ? t('navDashboard') : t('navAccount')}
               </Link>
-              <Link href="/profile" className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/25 border border-white/10 ml-2">
+              <Link href={user.role === "ADMIN" ? "/admin" : (user.role === "VENDOR" ? "/vendor" : "/profile")} className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/25 border border-white/10 ml-2">
                 {user.name?.[0]}
               </Link>
               <button onClick={logout} className="text-slate-400 hover:text-red-400 transition-colors bg-white/5 hover:bg-white/10 p-2 rounded-full border border-white/10 backdrop-blur-sm" title="Sign Out">

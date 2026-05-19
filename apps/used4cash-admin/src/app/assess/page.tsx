@@ -346,7 +346,7 @@ export default function AssessPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <StepPills current={step} />
-                    <Link href="/profile" className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/20 border border-white/5 ml-2">
+                    <Link href={user?.role === "ADMIN" ? "/admin" : (user?.role === "VENDOR" ? "/vendor" : "/profile")} className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/20 border border-white/5 ml-2">
                         {user.name?.[0]}
                     </Link>
                     <span className="text-sm font-medium text-slate-400 hidden md:block">{user.name}</span>
@@ -406,9 +406,9 @@ export default function AssessPage() {
                             <p className="text-slate-400 mb-6">
                                 Your reference is <strong className="text-emerald-400 font-mono">#{ticketId.slice(0, 8).toUpperCase()}</strong>. Our team will be in touch within 24 hours.
                             </p>
-                            <Link href="/profile" className="bg-blue-600 hover:bg-blue-500 text-white rounded-full px-6 py-3 font-semibold transition-colors text-sm inline-block">
-                                Track your order
-                            </Link>
+                             <Link href={user?.role === "ADMIN" ? "/admin" : (user?.role === "VENDOR" ? "/vendor" : "/profile")} className="bg-blue-600 hover:bg-blue-500 text-white rounded-full px-6 py-3 font-semibold transition-colors text-sm inline-block">
+                                 Track your order
+                             </Link>
                         </div>
                     )}
 

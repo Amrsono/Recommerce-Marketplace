@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: Readonly<{ children: React.Rea
                             </select>
                         </div>
                         <div className={`flex items-center gap-3 px-3 py-2 text-sm ${config.textMuted}`}>
-                            <Link href="/profile" className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/20 shrink-0">
+                            <Link href={user?.role === "ADMIN" ? "/admin" : (user?.role === "VENDOR" ? "/vendor" : "/profile")} className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/20 shrink-0">
                                 {user?.name?.[0]}
                             </Link>
                             <span className="truncate flex-1" dir="ltr">{user?.email}</span>
