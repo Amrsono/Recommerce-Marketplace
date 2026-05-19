@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Save, Key, Shield, AlertCircle, Palette, CheckCircle2, Moon, Sun, Sunset } from 'lucide-react';
+import { Save, Key, Shield, AlertCircle, Palette, CheckCircle2, Moon, Sun, Sunset, FileText } from 'lucide-react';
 import { useAdminTheme, AdminTheme, THEMES } from '@/contexts/ThemeContext';
 
 const THEME_OPTIONS: { id: AdminTheme; label: string; desc: string; icon: React.ElementType; preview: { bg: string; sidebar: string; text: string; accent: string } }[] = [
@@ -32,16 +32,23 @@ export default function SettingsPage() {
   const { theme: activeTheme, config, setTheme } = useAdminTheme();
 
   const [apiKey, setApiKey] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [isLoadingToken, setIsLoadingToken] = useState(false);
+  const [messageToken, setMessageToken] = useState('');
+
+  const [aboutUs, setAboutUs] = useState('');
+  const [contactUs, setContactUs] = useState('');
+  const [isLoadingPages, setIsLoadingPages] = useState(false);
+  const [messagePages, setMessagePages] = useState('');
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`);
         const data = await res.json();
-        if (data.success && data.settings?.AI_API_TOKEN) {
-          setApiKey(data.settings.AI_API_TOKEN);
+        if (data.success && data.settings) {
+          if (data.settings.AI_API_TOKEN) setApiKey(data.settings.AI_API_TOKEN);
+          if (data.settings.ABOUT_US_CONTENT) setAboutUs(data.settings.ABOUT_US_CONTENT);
+          if (data.settings.CONTACT_US_CONTENT) setContactUs(data.settings.CONTACT_US_CONTENT);
         }
       } catch (err) {
         console.error('Failed to fetch settings', err);
@@ -50,9 +57,9 @@ export default function SettingsPage() {
     fetchSettings();
   }, []);
 
-  const handleSave = async () => {
-    setIsLoading(true);
-    setMessage('');
+  const handleSaveToken = async () => {
+    setIsLoadingToken(true);
+    setMessageToken('');
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
         method: 'PUT',
@@ -61,15 +68,46 @@ export default function SettingsPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setMessage('Settings saved successfully!');
+        setMessageToken('API Token saved successfully!');
       } else {
-        setMessage('Failed to save settings.');
+        setMessageToken('Failed to save API Token.');
       }
     } catch (err) {
       console.error(err);
-      setMessage('An error occurred while saving.');
+      setMessageToken('An error occurred while saving.');
     } finally {
-      setIsLoading(false);
+      setIsLoadingToken(false);
+    }
+  };
+
+  const handleSavePages = async () => {
+    setIsLoadingPages(true);
+    setMessagePages('');
+    try {
+      const res1 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'ABOUT_US_CONTENT', value: aboutUs }),
+      });
+      const res2 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'CONTACT_US_CONTENT', value: contactUs }),
+      });
+
+      const data1 = await res1.json();
+      const data2 = await res2.json();
+
+      if (data1.success && data2.success) {
+        setMessagePages('Page content saved successfully!');
+      } else {
+        setMessagePages('Failed to save page content.');
+      }
+    } catch (err) {
+      console.error(err);
+      setMessagePages('An error occurred while saving.');
+    } finally {
+      setIsLoadingPages(false);
     }
   };
 
@@ -101,8 +139,8 @@ export default function SettingsPage() {
                 key={opt.id}
                 onClick={() => setTheme(opt.id)}
                 className={`relative group rounded-2xl overflow-hidden border-2 transition-all duration-200 text-left ${isSelected
-                    ? 'border-blue-500 shadow-lg shadow-blue-500/20 scale-[1.02]'
-                    : `border-transparent hover:border-slate-600 hover:scale-[1.01]`
+                  ? 'border-blue-500 shadow-lg shadow-blue-500/20 scale-[1.02]'
+                  : `border-transparent hover:border-slate-600 hover:scale-[1.01]`
                   }`}
               >
                 {/* Mini Dashboard Preview */}
@@ -171,8 +209,8 @@ export default function SettingsPage() {
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 className={`w-full border rounded-lg px-4 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${activeTheme === 'light'
-                    ? 'bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-400'
-                    : 'bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500'
+                  ? 'bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-400'
+                  : 'bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500'
                   }`}
                 placeholder="sk-..."
               />
@@ -185,18 +223,77 @@ export default function SettingsPage() {
           </div>
 
           <button
-            onClick={handleSave}
-            disabled={isLoading}
+            onClick={handleSaveToken}
+            disabled={isLoadingToken}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            {isLoading ? 'Saving...' : 'Save Settings'}
+            {isLoadingToken ? 'Saving...' : 'Save Settings'}
           </button>
 
-          {message && (
-            <p className={`text-sm mt-4 flex items-center gap-2 ${message.includes('success') ? 'text-emerald-400' : 'text-red-400'}`}>
+          {messageToken && (
+            <p className={`text-sm mt-4 flex items-center gap-2 ${messageToken.includes('success') ? 'text-emerald-400' : 'text-red-400'}`}>
               <CheckCircle2 className="w-4 h-4" />
-              {message}
+              {messageToken}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Page Content Settings */}
+      <div className={`border ${config.border} rounded-xl p-6 ${config.card}`}>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-3 bg-emerald-500/10 rounded-lg">
+            <FileText className="w-6 h-6 text-emerald-400" />
+          </div>
+          <div>
+            <h2 className={`text-xl font-semibold ${config.text}`}>Page Content</h2>
+            <p className={`text-sm ${config.textMuted}`}>Manage the content for the About Us and Contact Us pages.</p>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className={`text-sm font-medium ${config.textMuted}`}>About Us</label>
+            <textarea
+              value={aboutUs}
+              onChange={(e) => setAboutUs(e.target.value)}
+              rows={5}
+              className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${activeTheme === 'light'
+                ? 'bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-400'
+                : 'bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500'
+                }`}
+              placeholder="Enter the About Us content here..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className={`text-sm font-medium ${config.textMuted}`}>Contact Us</label>
+            <textarea
+              value={contactUs}
+              onChange={(e) => setContactUs(e.target.value)}
+              rows={5}
+              className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${activeTheme === 'light'
+                ? 'bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-400'
+                : 'bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500'
+                }`}
+              placeholder="Enter the Contact Us content here (e.g., email, phone, address, etc.)..."
+            />
+          </div>
+
+          <button
+            onClick={handleSavePages}
+            disabled={isLoadingPages}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" />
+            {isLoadingPages ? 'Saving...' : 'Save Page Content'}
+          </button>
+
+          {messagePages && (
+            <p className={`text-sm mt-4 flex items-center gap-2 ${messagePages.includes('success') ? 'text-emerald-400' : 'text-red-400'}`}>
+              <CheckCircle2 className="w-4 h-4" />
+              {messagePages}
             </p>
           )}
         </div>
