@@ -31,6 +31,67 @@ export interface TranslationDictionary {
   modalStep4Title: string;
   modalStep4Desc: string;
   modalStartSelling: string;
+  adminNavMainPage: string;
+  adminNavDashboard: string;
+  adminNavTicketCommand: string;
+  adminNavSupportChat: string;
+  adminNavSettings: string;
+  adminSignOut: string;
+  adminDashTitle: string;
+  adminDashLoading: string;
+  adminDashError: string;
+  adminDashSubTitle: string;
+  adminDashLive: string;
+  adminDashTotalTickets: string;
+  adminDashOpen: string;
+  adminDashActiveCustomers: string;
+  adminDashRegisteredUsers: string;
+  adminDashDevicesEvaluated: string;
+  adminDashTotalSubmissions: string;
+  adminDashSLAFulfillment: string;
+  adminDashResolvedTotal: string;
+  adminDashDeviceSubmissionsTitle: string;
+  adminDashDeviceSubmissionsDesc: string;
+  adminDashWeeklyTicketTitle: string;
+  adminDashWeeklyTicketDesc: string;
+  adminSettingsTitle: string;
+  adminSettingsDesc: string;
+  adminSettingsTheme: string;
+  adminSettingsThemeDesc: string;
+  adminSettingsThemeSaved: string;
+  adminSettingsAITitle: string;
+  adminSettingsAIDesc: string;
+  adminSettingsAIToken: string;
+  adminSettingsAITokenStored: string;
+  adminSettingsSaveToken: string;
+  adminSettingsSaving: string;
+  adminSettingsPageContent: string;
+  adminSettingsPageContentDesc: string;
+  adminSettingsSavePages: string;
+  adminKanbanTitle: string;
+  adminKanbanDesc: string;
+  adminKanbanAll: string;
+  adminKanbanUrgent: string;
+  adminKanbanActive: string;
+  adminKanbanSearch: string;
+  adminKanbanNewIntake: string;
+  adminKanbanValuationReady: string;
+  adminKanbanEngineerOut: string;
+  adminKanbanCompleted: string;
+  adminKanbanEstimatePricing: string;
+  adminKanbanScheduleVisit: string;
+  adminKanbanMarkResolved: string;
+  adminKanbanNoTickets: string;
+  adminKanbanUrgentTag: string;
+  adminKanbanRemoveUrgent: string;
+  adminKanbanMarkUrgent: string;
+  adminKanbanScheduleModalTitle: string;
+  adminKanbanScheduleModalDesc: string;
+  adminKanbanPickupDate: string;
+  adminKanbanPreferredTime: string;
+  adminKanbanCancel: string;
+  adminKanbanDispatchRequest: string;
+  adminLanguage: string;
 }
 
 export const translations: Record<Locale, TranslationDictionary> = {
@@ -64,7 +125,68 @@ export const translations: Record<Locale, TranslationDictionary> = {
     modalStep3Desc: "If your device is in 'Mint' condition, we arrange a standard mail-in. If the condition is 'Poor' or 'Complex', the AI automatically dispatches a certified engineer to your location within 24 hours to securely verify the device and handover the cash.",
     modalStep4Title: "4. The Admin Command Center",
     modalStep4Desc: "Behind the scenes, our enterprise ticketing system tracks every SLA deadline ensuring you get paid and supported exactly on time.",
-    modalStartSelling: "Start selling"
+    modalStartSelling: "Start selling",
+    adminNavMainPage: "Main Page",
+    adminNavDashboard: "Dashboard",
+    adminNavTicketCommand: "Ticket Command",
+    adminNavSupportChat: "Support Chat",
+    adminNavSettings: "Settings",
+    adminSignOut: "Sign Out",
+    adminDashTitle: "Analytics Dashboard",
+    adminDashLoading: "Loading live platform metrics…",
+    adminDashError: "API unreachable — is the server running?",
+    adminDashSubTitle: "Live platform overview from database.",
+    adminDashLive: "Live",
+    adminDashTotalTickets: "Total Tickets",
+    adminDashOpen: "open",
+    adminDashActiveCustomers: "Active Customers",
+    adminDashRegisteredUsers: "registered users",
+    adminDashDevicesEvaluated: "Devices Evaluated",
+    adminDashTotalSubmissions: "total submissions",
+    adminDashSLAFulfillment: "SLA Fulfillment",
+    adminDashResolvedTotal: "resolved / total",
+    adminDashDeviceSubmissionsTitle: "Device Submissions (6 Months)",
+    adminDashDeviceSubmissionsDesc: "Real monthly device submission volume",
+    adminDashWeeklyTicketTitle: "Weekly Ticket Volume",
+    adminDashWeeklyTicketDesc: "Tickets created in the last 7 days",
+    adminSettingsTitle: "System Settings",
+    adminSettingsDesc: "Manage your global configurations, themes, and API integrations.",
+    adminSettingsTheme: "Dashboard Theme",
+    adminSettingsThemeDesc: "Choose the colour scheme for your admin experience. Changes apply instantly.",
+    adminSettingsThemeSaved: "Theme preference is saved to your browser automatically.",
+    adminSettingsAITitle: "AI Integration",
+    adminSettingsAIDesc: "Configure the API token for the pricing model (Claude/OpenAI).",
+    adminSettingsAIToken: "API Token",
+    adminSettingsAITokenStored: "This token is stored securely in the database and never exposed to the client.",
+    adminSettingsSaveToken: "Save Settings",
+    adminSettingsSaving: "Saving...",
+    adminSettingsPageContent: "Page Content",
+    adminSettingsPageContentDesc: "Manage the content for the About Us and Contact Us pages.",
+    adminSettingsSavePages: "Save Page Content",
+    adminKanbanTitle: "Ticket Command",
+    adminKanbanDesc: "Fleet-wide orchestration of device evaluations, pricing workflows, and engineer dispatches.",
+    adminKanbanAll: "All",
+    adminKanbanUrgent: "Urgent",
+    adminKanbanActive: "Active",
+    adminKanbanSearch: "Search fleet...",
+    adminKanbanNewIntake: "New Intake",
+    adminKanbanValuationReady: "Valuation Ready",
+    adminKanbanEngineerOut: "Engineer Out",
+    adminKanbanCompleted: "Completed",
+    adminKanbanEstimatePricing: "Estimate Pricing",
+    adminKanbanScheduleVisit: "Schedule Visit",
+    adminKanbanMarkResolved: "Mark Resolved",
+    adminKanbanNoTickets: "No tickets",
+    adminKanbanUrgentTag: "URGENT",
+    adminKanbanRemoveUrgent: "Remove Urgent Flag",
+    adminKanbanMarkUrgent: "Mark as Urgent",
+    adminKanbanScheduleModalTitle: "Schedule Visit",
+    adminKanbanScheduleModalDesc: "Propose a pickup date for this device.",
+    adminKanbanPickupDate: "Pickup Date",
+    adminKanbanPreferredTime: "Preferred Time",
+    adminKanbanCancel: "Cancel",
+    adminKanbanDispatchRequest: "Dispatch Request",
+    adminLanguage: "Language"
   },
   fr: {
     navBrand: "used4cash",
@@ -89,14 +211,75 @@ export const translations: Record<Locale, TranslationDictionary> = {
     modalTitle: "Le parcours du marché",
     modalSubtitle: "used4cash connecte votre appareil à un réseau en direct de vendeurs vérifiés en compétition pour vous offrir le meilleur prix. Pas d'arnaques, juste des enchères transparentes et des paiements basés sur les données.",
     modalStep1Title: "1. L'évaluation par IA",
-    modalStep1Desc: "Commencez par saisir les métadonnées de votre appareil. Notre agent d'IA conversationnel vous guidera et demandera une analyse de diagnostic visuel via votre caméra pour détecter les bosses ou les rayures.",
+    modalStep1Desc: "Commencez par saisir les métadonnées de votre appareil. Notre agent d'IA conversationnel vous guidera et demandera une analyse de diagnostic visuel via votre caméra pour détecter les bosses ou rayures.",
     modalStep2Title: "2. Évaluation instantanée",
-    modalStep2Desc: "Notre agent Claude 3.5 Sonnet traite vos données par rapport aux données du marché en temps réel, appliquant la dépréciation standard de l'usure et générant une offre de rachat instantanée et hautement compétitive.",
+    modalStep2Desc: "Notre agent Claude 3.5 Sonnet traite vos données par rapport aux données du marché en temps réel, appliquant la dépréciation standard et générant une offre de rachat instantanée et très compétitive.",
     modalStep3Title: "3. Logique de condition et SLA",
     modalStep3Desc: "Si votre appareil est à l'état 'Neuf', nous organisons un envoi postal standard. Si l'état est 'Mauvais' ou 'Complexe', l'IA dépêche automatiquement un ingénieur certifié à votre adresse sous 24 heures pour vérifier l'appareil et vous remettre l'argent.",
     modalStep4Title: "4. Le centre de commande administrateur",
     modalStep4Desc: "Dans les coulisses, notre système de ticket d'entreprise suit chaque échéance pour vous garantir d'être payé et assisté exactement à temps.",
-    modalStartSelling: "Commencer à vendre"
+    modalStartSelling: "Commencer à vendre",
+    adminNavMainPage: "Page Principale",
+    adminNavDashboard: "Tableau de Bord",
+    adminNavTicketCommand: "Commandes de Billets",
+    adminNavSupportChat: "Chat d'Assistance",
+    adminNavSettings: "Paramètres",
+    adminSignOut: "Déconnexion",
+    adminDashTitle: "Tableau de Bord Analytique",
+    adminDashLoading: "Chargement des métriques...",
+    adminDashError: "API inaccessible — le serveur fonctionne-t-il ?",
+    adminDashSubTitle: "Aperçu de la plateforme en direct depuis la base de données.",
+    adminDashLive: "En direct",
+    adminDashTotalTickets: "Billets Totaux",
+    adminDashOpen: "ouvert",
+    adminDashActiveCustomers: "Clients Actifs",
+    adminDashRegisteredUsers: "utilisateurs enregistrés",
+    adminDashDevicesEvaluated: "Appareils Évalués",
+    adminDashTotalSubmissions: "soumissions totales",
+    adminDashSLAFulfillment: "Respect des SLA",
+    adminDashResolvedTotal: "résolu / total",
+    adminDashDeviceSubmissionsTitle: "Soumissions d'Appareils (6 Mois)",
+    adminDashDeviceSubmissionsDesc: "Volume mensuel de soumission d'appareils",
+    adminDashWeeklyTicketTitle: "Volume Hebdomadaire des Billets",
+    adminDashWeeklyTicketDesc: "Billets créés ces 7 derniers jours",
+    adminSettingsTitle: "Paramètres du Système",
+    adminSettingsDesc: "Gérez vos configurations globales, thèmes et intégrations API.",
+    adminSettingsTheme: "Thème du Tableau de Bord",
+    adminSettingsThemeDesc: "Choisissez la palette de couleurs. Les modifications s'appliquent instantanément.",
+    adminSettingsThemeSaved: "La préférence de thème est enregistrée automatiquement.",
+    adminSettingsAITitle: "Intégration de l'IA",
+    adminSettingsAIDesc: "Configurez le jeton API pour le modèle de tarification (Claude/OpenAI).",
+    adminSettingsAIToken: "Jeton API",
+    adminSettingsAITokenStored: "Ce jeton est stocké en toute sécurité dans la base de données.",
+    adminSettingsSaveToken: "Enregistrer les Paramètres",
+    adminSettingsSaving: "Enregistrement...",
+    adminSettingsPageContent: "Contenu de la Page",
+    adminSettingsPageContentDesc: "Gérez le contenu des pages À propos et Contact.",
+    adminSettingsSavePages: "Enregistrer le Contenu",
+    adminKanbanTitle: "Commandes de Billets",
+    adminKanbanDesc: "Orchestration à l'échelle de la flotte des évaluations d'appareils et flux de travail.",
+    adminKanbanAll: "Tout",
+    adminKanbanUrgent: "Urgent",
+    adminKanbanActive: "Actif",
+    adminKanbanSearch: "Rechercher...",
+    adminKanbanNewIntake: "Nouvelle Entrée",
+    adminKanbanValuationReady: "Évaluation Prête",
+    adminKanbanEngineerOut: "Ingénieur Envoyé",
+    adminKanbanCompleted: "Terminé",
+    adminKanbanEstimatePricing: "Estimer le Prix",
+    adminKanbanScheduleVisit: "Planifier une Visite",
+    adminKanbanMarkResolved: "Marquer comme Résolu",
+    adminKanbanNoTickets: "Aucun billet",
+    adminKanbanUrgentTag: "URGENT",
+    adminKanbanRemoveUrgent: "Retirer l'Urgence",
+    adminKanbanMarkUrgent: "Marquer comme Urgent",
+    adminKanbanScheduleModalTitle: "Planifier une Visite",
+    adminKanbanScheduleModalDesc: "Proposez une date de collecte pour cet appareil.",
+    adminKanbanPickupDate: "Date de Collecte",
+    adminKanbanPreferredTime: "Heure Préférée",
+    adminKanbanCancel: "Annuler",
+    adminKanbanDispatchRequest: "Envoyer la Demande",
+    adminLanguage: "Langue"
   },
   es: {
     navBrand: "used4cash",
@@ -128,7 +311,68 @@ export const translations: Record<Locale, TranslationDictionary> = {
     modalStep3Desc: "Si tu dispositivo está en estado 'Excelente', organizamos un envío estándar. Si está en mal estado o es complejo, la IA envía automáticamente a un ingeniero certificado a tu ubicación en 24 horas para verificarlo y entregarte el dinero.",
     modalStep4Title: "4. El centro de comando del administrador",
     modalStep4Desc: "Detrás de escena, nuestro sistema de tickets empresarial realiza un seguimiento de cada plazo de SLA para garantizar que recibas tu pago y soporte a tiempo.",
-    modalStartSelling: "Empezar a vender"
+    modalStartSelling: "Empezar a vender",
+    adminNavMainPage: "Página Principal",
+    adminNavDashboard: "Tablero",
+    adminNavTicketCommand: "Comando de Tickets",
+    adminNavSupportChat: "Chat de Soporte",
+    adminNavSettings: "Configuración",
+    adminSignOut: "Cerrar sesión",
+    adminDashTitle: "Tablero de Análisis",
+    adminDashLoading: "Cargando métricas en vivo...",
+    adminDashError: "API inalcanzable — ¿está el servidor en funcionamiento?",
+    adminDashSubTitle: "Resumen en vivo de la plataforma desde la base de datos.",
+    adminDashLive: "En vivo",
+    adminDashTotalTickets: "Tickets Totales",
+    adminDashOpen: "abierto",
+    adminDashActiveCustomers: "Clientes Activos",
+    adminDashRegisteredUsers: "usuarios registrados",
+    adminDashDevicesEvaluated: "Dispositivos Evaluados",
+    adminDashTotalSubmissions: "presentaciones totales",
+    adminDashSLAFulfillment: "Cumplimiento SLA",
+    adminDashResolvedTotal: "resuelto / total",
+    adminDashDeviceSubmissionsTitle: "Presentaciones de Dispositivos (6 Meses)",
+    adminDashDeviceSubmissionsDesc: "Volumen mensual real de presentaciones",
+    adminDashWeeklyTicketTitle: "Volumen Semanal de Tickets",
+    adminDashWeeklyTicketDesc: "Tickets creados en los últimos 7 días",
+    adminSettingsTitle: "Configuración del Sistema",
+    adminSettingsDesc: "Administre sus configuraciones globales, temas e integraciones de API.",
+    adminSettingsTheme: "Tema del Tablero",
+    adminSettingsThemeDesc: "Elija el esquema de colores para su experiencia. Los cambios se aplican al instante.",
+    adminSettingsThemeSaved: "La preferencia de tema se guarda automáticamente.",
+    adminSettingsAITitle: "Integración de IA",
+    adminSettingsAIDesc: "Configure el token API para el modelo de precios (Claude/OpenAI).",
+    adminSettingsAIToken: "Token API",
+    adminSettingsAITokenStored: "Este token se almacena de forma segura en la base de datos.",
+    adminSettingsSaveToken: "Guardar Configuración",
+    adminSettingsSaving: "Guardando...",
+    adminSettingsPageContent: "Contenido de la Página",
+    adminSettingsPageContentDesc: "Gestione el contenido de las páginas de Quiénes Somos y Contacto.",
+    adminSettingsSavePages: "Guardar Contenido",
+    adminKanbanTitle: "Comando de Tickets",
+    adminKanbanDesc: "Orquestación a nivel de flota de evaluaciones de dispositivos y despachos de ingenieros.",
+    adminKanbanAll: "Todos",
+    adminKanbanUrgent: "Urgente",
+    adminKanbanActive: "Activo",
+    adminKanbanSearch: "Buscar en la flota...",
+    adminKanbanNewIntake: "Nueva Entrada",
+    adminKanbanValuationReady: "Valoración Lista",
+    adminKanbanEngineerOut: "Ingeniero Enviado",
+    adminKanbanCompleted: "Completado",
+    adminKanbanEstimatePricing: "Estimar Precios",
+    adminKanbanScheduleVisit: "Programar Visita",
+    adminKanbanMarkResolved: "Marcar Resuelto",
+    adminKanbanNoTickets: "Sin tickets",
+    adminKanbanUrgentTag: "URGENTE",
+    adminKanbanRemoveUrgent: "Quitar Urgencia",
+    adminKanbanMarkUrgent: "Marcar como Urgente",
+    adminKanbanScheduleModalTitle: "Programar Visita",
+    adminKanbanScheduleModalDesc: "Proponga una fecha de recolección para este dispositivo.",
+    adminKanbanPickupDate: "Fecha de Recolección",
+    adminKanbanPreferredTime: "Hora Preferida",
+    adminKanbanCancel: "Cancelar",
+    adminKanbanDispatchRequest: "Enviar Solicitud",
+    adminLanguage: "Idioma"
   },
   pt: {
     navBrand: "used4cash",
@@ -160,7 +404,68 @@ export const translations: Record<Locale, TranslationDictionary> = {
     modalStep3Desc: "Se o seu aparelho estiver em estado de 'Novo', organizamos o envio padrão. Se o estado for 'Ruim' ou 'Complexo', a IA despacha automaticamente um engenheiro certificado até você em 24 horas para verificar o aparelho e entregar o dinheiro.",
     modalStep4Title: "4. O centro de comando administrativo",
     modalStep4Desc: "Nos bastidores, nosso sistema empresarial de tickets rastreia todos os prazos de SLAs para garantir que você receba o pagamento e o suporte no tempo exato.",
-    modalStartSelling: "Começar a vender"
+    modalStartSelling: "Começar a vender",
+    adminNavMainPage: "Página Principal",
+    adminNavDashboard: "Painel",
+    adminNavTicketCommand: "Comando de Tickets",
+    adminNavSupportChat: "Chat de Suporte",
+    adminNavSettings: "Configurações",
+    adminSignOut: "Sair",
+    adminDashTitle: "Painel de Análise",
+    adminDashLoading: "Carregando métricas ao vivo...",
+    adminDashError: "API inacessível — o servidor está em execução?",
+    adminDashSubTitle: "Visão geral ao vivo da plataforma no banco de dados.",
+    adminDashLive: "Ao vivo",
+    adminDashTotalTickets: "Total de Tickets",
+    adminDashOpen: "aberto",
+    adminDashActiveCustomers: "Clientes Ativos",
+    adminDashRegisteredUsers: "usuários registrados",
+    adminDashDevicesEvaluated: "Dispositivos Avaliados",
+    adminDashTotalSubmissions: "submissões totais",
+    adminDashSLAFulfillment: "Cumprimento de SLA",
+    adminDashResolvedTotal: "resolvido / total",
+    adminDashDeviceSubmissionsTitle: "Submissões de Dispositivos (6 Meses)",
+    adminDashDeviceSubmissionsDesc: "Volume de submissão mensal real",
+    adminDashWeeklyTicketTitle: "Volume Semanal de Tickets",
+    adminDashWeeklyTicketDesc: "Tickets criados nos últimos 7 dias",
+    adminSettingsTitle: "Configurações do Sistema",
+    adminSettingsDesc: "Gerencie suas configurações globais, temas e integrações.",
+    adminSettingsTheme: "Tema do Painel",
+    adminSettingsThemeDesc: "Escolha o esquema de cores para sua experiência. Mudanças aplicam-se instantaneamente.",
+    adminSettingsThemeSaved: "A preferência de tema é salva automaticamente.",
+    adminSettingsAITitle: "Integração de IA",
+    adminSettingsAIDesc: "Configure o token API para o modelo de precificação (Claude/OpenAI).",
+    adminSettingsAIToken: "Token API",
+    adminSettingsAITokenStored: "Este token é armazenado com segurança no banco de dados.",
+    adminSettingsSaveToken: "Salvar Configurações",
+    adminSettingsSaving: "Salvando...",
+    adminSettingsPageContent: "Conteúdo da Página",
+    adminSettingsPageContentDesc: "Gerencie o conteúdo das páginas Sobre Nós e Fale Conosco.",
+    adminSettingsSavePages: "Salvar Conteúdo",
+    adminKanbanTitle: "Comando de Tickets",
+    adminKanbanDesc: "Orquestração em toda a frota de avaliações de dispositivos e despachos de engenheiros.",
+    adminKanbanAll: "Todos",
+    adminKanbanUrgent: "Urgente",
+    adminKanbanActive: "Ativo",
+    adminKanbanSearch: "Pesquisar na frota...",
+    adminKanbanNewIntake: "Nova Entrada",
+    adminKanbanValuationReady: "Avaliação Pronta",
+    adminKanbanEngineerOut: "Engenheiro Enviado",
+    adminKanbanCompleted: "Concluído",
+    adminKanbanEstimatePricing: "Estimar Preço",
+    adminKanbanScheduleVisit: "Agendar Visita",
+    adminKanbanMarkResolved: "Marcar Resolvido",
+    adminKanbanNoTickets: "Sem tickets",
+    adminKanbanUrgentTag: "URGENTE",
+    adminKanbanRemoveUrgent: "Remover Urgência",
+    adminKanbanMarkUrgent: "Marcar como Urgente",
+    adminKanbanScheduleModalTitle: "Agendar Visita",
+    adminKanbanScheduleModalDesc: "Proponha uma data de coleta para este dispositivo.",
+    adminKanbanPickupDate: "Data de Coleta",
+    adminKanbanPreferredTime: "Horário Preferido",
+    adminKanbanCancel: "Cancelar",
+    adminKanbanDispatchRequest: "Enviar Solicitação",
+    adminLanguage: "Idioma"
   },
   ar: {
     navBrand: "used4cash",
@@ -192,6 +497,67 @@ export const translations: Record<Locale, TranslationDictionary> = {
     modalStep3Desc: "إذا كان جهازك في حالة 'ممتازة'، نقوم بترتيب شحن قياسي. أما إذا كانت الحالة 'سيئة' أو 'معقدة'، فإن الذكاء الاصطناعي يرسل تلقائياً مهندساً معتمداً لموقعك في غضون ٢٤ ساعة لفحص الجهاز وتسليم الكاش.",
     modalStep4Title: "٤. مركز التحكم الإداري",
     modalStep4Desc: "خلف الكواليس، يتتبع نظام التذاكر المؤسسي لدينا كل موعد نهائي لضمان حصولك على الدفع والدعم في الوقت المحدد تماماً.",
-    modalStartSelling: "ابدأ البيع الآن"
+    modalStartSelling: "ابدأ البيع الآن",
+    adminNavMainPage: "الصفحة الرئيسية",
+    adminNavDashboard: "لوحة التحكم",
+    adminNavTicketCommand: "إدارة التذاكر",
+    adminNavSupportChat: "دردشة الدعم",
+    adminNavSettings: "الإعدادات",
+    adminSignOut: "تسجيل الخروج",
+    adminDashTitle: "لوحة التحليلات",
+    adminDashLoading: "جاري تحميل مقاييس المنصة الحية...",
+    adminDashError: "لا يمكن الوصول إلى الواجهة البرمجية - هل الخادم يعمل؟",
+    adminDashSubTitle: "نظرة عامة حية للمنصة من قاعدة البيانات.",
+    adminDashLive: "مباشر",
+    adminDashTotalTickets: "إجمالي التذاكر",
+    adminDashOpen: "مفتوحة",
+    adminDashActiveCustomers: "العملاء النشطون",
+    adminDashRegisteredUsers: "المستخدمون المسجلون",
+    adminDashDevicesEvaluated: "الأجهزة المُقيّمة",
+    adminDashTotalSubmissions: "إجمالي التقديمات",
+    adminDashSLAFulfillment: "تحقيق مستوى الخدمة",
+    adminDashResolvedTotal: "تم الحل / الإجمالي",
+    adminDashDeviceSubmissionsTitle: "تقديمات الأجهزة (6 أشهر)",
+    adminDashDeviceSubmissionsDesc: "حجم تقديم الأجهزة الشهري الفعلي",
+    adminDashWeeklyTicketTitle: "حجم التذاكر الأسبوعي",
+    adminDashWeeklyTicketDesc: "التذاكر المنشأة في آخر 7 أيام",
+    adminSettingsTitle: "إعدادات النظام",
+    adminSettingsDesc: "إدارة التكوينات العامة والسمات وتكاملات واجهة برمجة التطبيقات.",
+    adminSettingsTheme: "سمة لوحة التحكم",
+    adminSettingsThemeDesc: "اختر نظام الألوان لتجربة الإدارة الخاصة بك. تُطبق التغييرات فوراً.",
+    adminSettingsThemeSaved: "يتم حفظ تفضيل السمة في متصفحك تلقائياً.",
+    adminSettingsAITitle: "تكامل الذكاء الاصطناعي",
+    adminSettingsAIDesc: "تكوين رمز واجهة برمجة التطبيقات لنموذج التسعير (Claude/OpenAI).",
+    adminSettingsAIToken: "رمز الواجهة البرمجية",
+    adminSettingsAITokenStored: "يتم تخزين هذا الرمز بأمان في قاعدة البيانات ولا يُكشف أبداً للعميل.",
+    adminSettingsSaveToken: "حفظ الإعدادات",
+    adminSettingsSaving: "جاري الحفظ...",
+    adminSettingsPageContent: "محتوى الصفحة",
+    adminSettingsPageContentDesc: "إدارة المحتوى لصفحات من نحن واتصل بنا.",
+    adminSettingsSavePages: "حفظ محتوى الصفحة",
+    adminKanbanTitle: "إدارة التذاكر",
+    adminKanbanDesc: "تنسيق أسطول كامل لتقييمات الأجهزة وسير عمل التسعير وإرساليات المهندسين.",
+    adminKanbanAll: "الكل",
+    adminKanbanUrgent: "عاجل",
+    adminKanbanActive: "نشط",
+    adminKanbanSearch: "البحث في الأسطول...",
+    adminKanbanNewIntake: "استلام جديد",
+    adminKanbanValuationReady: "التقييم جاهز",
+    adminKanbanEngineerOut: "تم إرسال المهندس",
+    adminKanbanCompleted: "مكتمل",
+    adminKanbanEstimatePricing: "تسعير التقدير",
+    adminKanbanScheduleVisit: "جدولة الزيارة",
+    adminKanbanMarkResolved: "تحديد كمحلول",
+    adminKanbanNoTickets: "لا توجد تذاكر",
+    adminKanbanUrgentTag: "عاجل",
+    adminKanbanRemoveUrgent: "إزالة علامة عاجل",
+    adminKanbanMarkUrgent: "وضع علامة كعاجل",
+    adminKanbanScheduleModalTitle: "جدولة الزيارة",
+    adminKanbanScheduleModalDesc: "اقتراح تاريخ استلام لهذا الجهاز.",
+    adminKanbanPickupDate: "تاريخ الاستلام",
+    adminKanbanPreferredTime: "الوقت المفضل",
+    adminKanbanCancel: "إلغاء",
+    adminKanbanDispatchRequest: "إرسال الطلب",
+    adminLanguage: "اللغة"
   }
 };

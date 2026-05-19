@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Users, Ticket, ArrowUpRight, Smartphone, Loader2 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type Stats = {
     totalTickets: number;
@@ -21,6 +22,7 @@ export default function Dashboard() {
     const [weeklyData, setWeeklyData] = useState<WeeklyPoint[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { t } = useLanguage();
 
     useEffect(() => {
         const fetchStats = () => {
@@ -47,10 +49,10 @@ export default function Dashboard() {
 
     const kpiCards = stats
         ? [
-            { label: 'Total Tickets', value: stats.totalTickets.toLocaleString(), icon: Ticket, change: `${stats.openTickets} open` },
-            { label: 'Active Customers', value: stats.totalUsers.toLocaleString(), icon: Users, change: 'registered users' },
-            { label: 'Devices Evaluated', value: stats.totalDevices.toLocaleString(), icon: Smartphone, change: 'total submissions' },
-            { label: 'SLA Fulfillment', value: stats.slaFulfillment, icon: ArrowUpRight, change: 'resolved / total' },
+            { label: t('adminDashTotalTickets'), value: stats.totalTickets.toLocaleString(), icon: Ticket, change: `${stats.openTickets} ${t('adminDashOpen')}` },
+            { label: t('adminDashActiveCustomers'), value: stats.totalUsers.toLocaleString(), icon: Users, change: t('adminDashRegisteredUsers') },
+            { label: t('adminDashDevicesEvaluated'), value: stats.totalDevices.toLocaleString(), icon: Smartphone, change: t('adminDashTotalSubmissions') },
+            { label: t('adminDashSLAFulfillment'), value: stats.slaFulfillment, icon: ArrowUpRight, change: t('adminDashResolvedTotal') },
         ]
         : [];
 
@@ -58,15 +60,15 @@ export default function Dashboard() {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <header className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
+                    <h1 className="text-3xl font-bold">{t('adminDashTitle')}</h1>
                     <p className="text-slate-400 mt-1">
-                        {isLoading ? 'Loading live platform metrics…' : error ? error : 'Live platform overview from database.'}
+                        {isLoading ? t('adminDashLoading') : error ? error : t('adminDashSubTitle')}
                     </p>
                 </div>
                 {!isLoading && !error && (
                     <span className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full font-medium">
                         <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                        Live
+                        {t('adminDashLive')}
                     </span>
                 )}
             </header>
@@ -106,8 +108,8 @@ export default function Dashboard() {
             {!isLoading && !error && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                        <h3 className="text-lg font-semibold mb-1">Device Submissions (6 Months)</h3>
-                        <p className="text-xs text-slate-500 mb-6">Real monthly device submission volume</p>
+                        <h3 className="text-lg font-semibold mb-1">{t('adminDashDeviceSubmissionsTitle')}</h3>
+                        <p className="text-xs text-slate-500 mb-6">{t('adminDashDeviceSubmissionsDesc')}</p>
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={volumeData}>
@@ -128,8 +130,8 @@ export default function Dashboard() {
                     </div>
 
                     <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-                        <h3 className="text-lg font-semibold mb-1">Weekly Ticket Volume</h3>
-                        <p className="text-xs text-slate-500 mb-6">Tickets created in the last 7 days</p>
+                        <h3 className="text-lg font-semibold mb-1">{t('adminDashWeeklyTicketTitle')}</h3>
+                        <p className="text-xs text-slate-500 mb-6">{t('adminDashWeeklyTicketDesc')}</p>
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={weeklyData}>

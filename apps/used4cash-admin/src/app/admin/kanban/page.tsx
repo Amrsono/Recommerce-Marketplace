@@ -6,6 +6,7 @@ import {
     Search, Filter, ArrowRight, Info, AlertTriangle,
     Zap, Calendar, Check, MoreVertical
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type Ticket = {
     id: string;
@@ -25,6 +26,7 @@ export default function KanbanCommandCenter() {
     const [selectedTicketForSchedule, setSelectedTicketForSchedule] = useState<Ticket | null>(null);
     const [scheduleDate, setScheduleDate] = useState('');
     const [scheduleTime, setScheduleTime] = useState('');
+    const { t } = useLanguage();
 
     const fetchTickets = async () => {
         try {
@@ -158,7 +160,7 @@ export default function KanbanCommandCenter() {
                     {columnTickets.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12 text-slate-600 border-2 border-dashed border-slate-800/50 rounded-xl">
                             <Info className="w-8 h-8 opacity-20 mb-2" />
-                            <span className="text-xs">No tickets</span>
+                            <span className="text-xs">{t('adminKanbanNoTickets')}</span>
                         </div>
                     ) : (
                         columnTickets.map(ticket => (
@@ -177,13 +179,13 @@ export default function KanbanCommandCenter() {
                                         {ticket.isUrgent && (
                                             <span className="flex items-center gap-1 text-[10px] font-bold text-red-500 animate-pulse">
                                                 <Zap className="w-3 h-3 fill-current" />
-                                                URGENT
+                                                {t('adminKanbanUrgentTag')}
                                             </span>
                                         )}
                                     </div>
                                     <button 
                                         onClick={() => toggleUrgency(ticket.id, ticket.isUrgent)}
-                                        title={ticket.isUrgent ? "Remove Urgent Flag" : "Mark as Urgent"}
+                                        title={ticket.isUrgent ? t('adminKanbanRemoveUrgent') : t('adminKanbanMarkUrgent')}
                                         className={`transition-colors p-1 rounded-md ${ticket.isUrgent ? 'text-red-500 hover:bg-red-500/10' : 'text-slate-600 hover:text-white hover:bg-slate-800'}`}
                                     >
                                         <AlertTriangle className="w-4 h-4" />
@@ -201,7 +203,7 @@ export default function KanbanCommandCenter() {
                                     {nextStatus && (
                                         <button 
                                             onClick={() => {
-                                                if (actionLabel === 'Schedule Visit') {
+                                                if (nextStatus === 'ENGINEER_VISIT_SCHEDULED' && ticket.status === 'PRICING_ESTIMATED') {
                                                     setSelectedTicketForSchedule(ticket);
                                                 } else {
                                                     updateStatus(ticket.id, nextStatus);
@@ -233,9 +235,9 @@ export default function KanbanCommandCenter() {
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 min-h-screen flex flex-col">
             <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight">Ticket Command</h1>
+                    <h1 className="text-4xl font-extrabold tracking-tight">{t('adminKanbanTitle')}</h1>
                     <p className="text-slate-400 mt-2 max-w-xl">
-                        Fleet-wide orchestration of device evaluations, pricing workflows, and engineer dispatches.
+                        {t('adminKanbanDesc')}
                     </p>
                 </div>
 
@@ -245,19 +247,19 @@ export default function KanbanCommandCenter() {
                             onClick={() => setActiveFilter('ALL')}
                             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${activeFilter === 'ALL' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}
                         >
-                            All {stats.total}
+                            {t('adminKanbanAll')} {stats.total}
                         </button>
                         <button 
                             onClick={() => setActiveFilter('URGENT')}
                             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${activeFilter === 'URGENT' ? 'bg-red-600 text-white' : 'text-slate-400 hover:text-white'}`}
                         >
-                            Urgent {stats.urgent}
+                            {t('adminKanbanUrgent')} {stats.urgent}
                         </button>
                         <button 
                             onClick={() => setActiveFilter('ACTIVE')}
                             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${activeFilter === 'ACTIVE' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'}`}
                         >
-                            Active {stats.total - stats.resolved}
+                            {t('adminKanbanActive')} {stats.total - stats.resolved}
                         </button>
                     </div>
 
@@ -265,7 +267,7 @@ export default function KanbanCommandCenter() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                         <input 
                             type="text" 
-                            placeholder="Search fleet..." 
+                            placeholder={t('adminKanbanSearch')} 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm w-64 focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600"
@@ -278,31 +280,31 @@ export default function KanbanCommandCenter() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 flex-1">
                 {getStatusColumn(
                     'OPEN', 
-                    'New Intake', 
+                    t('adminKanbanNewIntake'), 
                     <ShieldAlert className="w-4 h-4 text-amber-500" />,
                     'PRICING_ESTIMATED',
-                    'Estimate Pricing',
+                    t('adminKanbanEstimatePricing'),
                     Zap
                 )}
                 {getStatusColumn(
                     'PRICING_ESTIMATED', 
-                    'Valuation Ready', 
+                    t('adminKanbanValuationReady'), 
                     <Clock className="w-4 h-4 text-blue-500" />,
                     'ENGINEER_VISIT_SCHEDULED',
-                    'Schedule Visit',
+                    t('adminKanbanScheduleVisit'),
                     Calendar
                 )}
                 {getStatusColumn(
                     'ENGINEER_VISIT_SCHEDULED', 
-                    'Engineer Out', 
+                    t('adminKanbanEngineerOut'), 
                     <CalendarClock className="w-4 h-4 text-purple-500" />,
                     'RESOLVED',
-                    'Mark Resolved',
+                    t('adminKanbanMarkResolved'),
                     Check
                 )}
                 {getStatusColumn(
                     'RESOLVED', 
-                    'Completed', 
+                    t('adminKanbanCompleted'), 
                     <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                 )}
             </div>
@@ -316,14 +318,14 @@ export default function KanbanCommandCenter() {
                                 <Calendar className="w-6 h-6 text-blue-500" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-white">Schedule Visit</h3>
-                                <p className="text-slate-400 text-sm">Propose a pickup date for this device.</p>
+                                <h3 className="text-xl font-bold text-white">{t('adminKanbanScheduleModalTitle')}</h3>
+                                <p className="text-slate-400 text-sm">{t('adminKanbanScheduleModalDesc')}</p>
                             </div>
                         </div>
 
                         <div className="space-y-4 mb-8">
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Pickup Date</label>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">{t('adminKanbanPickupDate')}</label>
                                 <input 
                                     type="date" 
                                     value={scheduleDate}
@@ -332,7 +334,7 @@ export default function KanbanCommandCenter() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Preferred Time</label>
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">{t('adminKanbanPreferredTime')}</label>
                                 <input 
                                     type="time" 
                                     value={scheduleTime}
@@ -347,7 +349,7 @@ export default function KanbanCommandCenter() {
                                 onClick={() => setSelectedTicketForSchedule(null)}
                                 className="flex-1 px-6 py-3 rounded-xl bg-slate-800 text-white font-bold text-sm hover:bg-slate-700 transition-colors"
                             >
-                                Cancel
+                                {t('adminKanbanCancel')}
                             </button>
                             <button 
                                 onClick={handleScheduleVisit}
@@ -357,7 +359,7 @@ export default function KanbanCommandCenter() {
                                 {isUpdating === selectedTicketForSchedule.id ? (
                                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                 ) : (
-                                    "Dispatch Request"
+                                    t('adminKanbanDispatchRequest')
                                 )}
                             </button>
                         </div>

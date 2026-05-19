@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Key, Shield, AlertCircle, Palette, CheckCircle2, Moon, Sun, Sunset, FileText } from 'lucide-react';
 import { useAdminTheme, AdminTheme, THEMES } from '@/contexts/ThemeContext';
+import { Locale } from '@/locales/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const THEME_OPTIONS: { id: AdminTheme; label: string; desc: string; icon: React.ElementType; preview: { bg: string; sidebar: string; text: string; accent: string } }[] = [
   {
@@ -30,13 +32,20 @@ const THEME_OPTIONS: { id: AdminTheme; label: string; desc: string; icon: React.
 
 export default function SettingsPage() {
   const { theme: activeTheme, config, setTheme } = useAdminTheme();
+  const { t } = useLanguage();
 
   const [apiKey, setApiKey] = useState('');
   const [isLoadingToken, setIsLoadingToken] = useState(false);
   const [messageToken, setMessageToken] = useState('');
 
-  const [aboutUs, setAboutUs] = useState('');
-  const [contactUs, setContactUs] = useState('');
+  const [pageContent, setPageContent] = useState<Record<Locale, { about: string; contact: string }>>({
+    en: { about: '', contact: '' },
+    fr: { about: '', contact: '' },
+    es: { about: '', contact: '' },
+    pt: { about: '', contact: '' },
+    ar: { about: '', contact: '' }
+  });
+  const [activeLang, setActiveLang] = useState<Locale>('en');
   const [isLoadingPages, setIsLoadingPages] = useState(false);
   const [messagePages, setMessagePages] = useState('');
 
@@ -47,8 +56,29 @@ export default function SettingsPage() {
         const data = await res.json();
         if (data.success && data.settings) {
           if (data.settings.AI_API_TOKEN) setApiKey(data.settings.AI_API_TOKEN);
-          if (data.settings.ABOUT_US_CONTENT) setAboutUs(data.settings.ABOUT_US_CONTENT);
-          if (data.settings.CONTACT_US_CONTENT) setContactUs(data.settings.CONTACT_US_CONTENT);
+          
+          setPageContent({
+            en: {
+              about: data.settings.ABOUT_US_CONTENT || '',
+              contact: data.settings.CONTACT_US_CONTENT || ''
+            },
+            fr: {
+              about: data.settings.ABOUT_US_CONTENT_FR || '',
+              contact: data.settings.CONTACT_US_CONTENT_FR || ''
+            },
+            es: {
+              about: data.settings.ABOUT_US_CONTENT_ES || '',
+              contact: data.settings.CONTACT_US_CONTENT_ES || ''
+            },
+            pt: {
+              about: data.settings.ABOUT_US_CONTENT_PT || '',
+              contact: data.settings.CONTACT_US_CONTENT_PT || ''
+            },
+            ar: {
+              about: data.settings.ABOUT_US_CONTENT_AR || '',
+              contact: data.settings.CONTACT_US_CONTENT_AR || ''
+            }
+          });
         }
       } catch (err) {
         console.error('Failed to fetch settings', err);
@@ -84,21 +114,28 @@ export default function SettingsPage() {
     setIsLoadingPages(true);
     setMessagePages('');
     try {
-      const res1 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
+      const keys = [
+        { key: 'ABOUT_US_CONTENT', val: pageContent.en.about },
+        { key: 'CONTACT_US_CONTENT', val: pageContent.en.contact },
+        { key: 'ABOUT_US_CONTENT_FR', val: pageContent.fr.about },
+        { key: 'CONTACT_US_CONTENT_FR', val: pageContent.fr.contact },
+        { key: 'ABOUT_US_CONTENT_ES', val: pageContent.es.about },
+        { key: 'CONTACT_US_CONTENT_ES', val: pageContent.es.contact },
+        { key: 'ABOUT_US_CONTENT_PT', val: pageContent.pt.about },
+        { key: 'CONTACT_US_CONTENT_PT', val: pageContent.pt.contact },
+        { key: 'ABOUT_US_CONTENT_AR', val: pageContent.ar.about },
+        { key: 'CONTACT_US_CONTENT_AR', val: pageContent.ar.contact },
+      ];
+
+      const promises = keys.map(k => fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: 'ABOUT_US_CONTENT', value: aboutUs }),
-      });
-      const res2 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: 'CONTACT_US_CONTENT', value: contactUs }),
-      });
+        body: JSON.stringify({ key: k.key, value: k.val }),
+      }).then(res => res.json()));
 
-      const data1 = await res1.json();
-      const data2 = await res2.json();
+      const results = await Promise.all(promises);
 
-      if (data1.success && data2.success) {
+      if (results.every(r => r.success)) {
         setMessagePages('Page content saved successfully!');
       } else {
         setMessagePages('Failed to save page content.');
@@ -114,8 +151,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-8 max-w-3xl">
       <div>
-        <h1 className={`text-3xl font-bold tracking-tight ${config.text}`}>System Settings</h1>
-        <p className={config.textMuted}>Manage your global configurations, themes, and API integrations.</p>
+        <h1 className={`text-3xl font-bold tracking-tight ${config.text}`}>{t('adminSettingsTitle')}</h1>
+        <p className={config.textMuted}>{t('adminSettingsDesc')}</p>
       </div>
 
       {/* Theme Picker */}
@@ -125,8 +162,8 @@ export default function SettingsPage() {
             <Palette className="w-6 h-6 text-violet-400" />
           </div>
           <div>
-            <h2 className={`text-xl font-semibold ${config.text}`}>Dashboard Theme</h2>
-            <p className={`text-sm ${config.textMuted}`}>Choose the colour scheme for your admin experience. Changes apply instantly.</p>
+            <h2 className={`text-xl font-semibold ${config.text}`}>{t('adminSettingsTheme')}</h2>
+            <p className={`text-sm ${config.textMuted}`}>{t('adminSettingsThemeDesc')}</p>
           </div>
         </div>
 
@@ -184,7 +221,7 @@ export default function SettingsPage() {
 
         <p className={`mt-4 text-xs ${config.textMuted} flex items-center gap-1.5`}>
           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-          Theme preference is saved to your browser automatically.
+          {t('adminSettingsThemeSaved')}
         </p>
       </div>
 
@@ -195,14 +232,14 @@ export default function SettingsPage() {
             <Key className="w-6 h-6 text-blue-400" />
           </div>
           <div>
-            <h2 className={`text-xl font-semibold ${config.text}`}>AI Integration</h2>
-            <p className={`text-sm ${config.textMuted}`}>Configure the API token for the pricing model (Claude/OpenAI).</p>
+            <h2 className={`text-xl font-semibold ${config.text}`}>{t('adminSettingsAITitle')}</h2>
+            <p className={`text-sm ${config.textMuted}`}>{t('adminSettingsAIDesc')}</p>
           </div>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className={`text-sm font-medium ${config.textMuted}`}>API Token</label>
+            <label className={`text-sm font-medium ${config.textMuted}`}>{t('adminSettingsAIToken')}</label>
             <div className="relative">
               <input
                 type="password"
@@ -218,7 +255,7 @@ export default function SettingsPage() {
             </div>
             <p className={`text-xs flex items-center gap-1 mt-2 ${config.textMuted}`}>
               <AlertCircle className="w-3 h-3" />
-              This token is stored securely in the database and never exposed to the client.
+              {t('adminSettingsAITokenStored')}
             </p>
           </div>
 
@@ -228,7 +265,7 @@ export default function SettingsPage() {
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            {isLoadingToken ? 'Saving...' : 'Save Settings'}
+            {isLoadingToken ? t('adminSettingsSaving') : t('adminSettingsSaveToken')}
           </button>
 
           {messageToken && (
@@ -247,38 +284,58 @@ export default function SettingsPage() {
             <FileText className="w-6 h-6 text-emerald-400" />
           </div>
           <div>
-            <h2 className={`text-xl font-semibold ${config.text}`}>Page Content</h2>
-            <p className={`text-sm ${config.textMuted}`}>Manage the content for the About Us and Contact Us pages.</p>
+            <h2 className={`text-xl font-semibold ${config.text}`}>{t('adminSettingsPageContent')}</h2>
+            <p className={`text-sm ${config.textMuted}`}>{t('adminSettingsPageContentDesc')}</p>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="space-y-2">
-            <label className={`text-sm font-medium ${config.textMuted}`}>About Us</label>
-            <textarea
-              value={aboutUs}
-              onChange={(e) => setAboutUs(e.target.value)}
-              rows={5}
-              className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${activeTheme === 'light'
-                ? 'bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-400'
-                : 'bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500'
+          <div className="flex gap-2 mb-4 border-b border-slate-700/50 pb-4">
+            {(['en', 'fr', 'es', 'pt', 'ar'] as Locale[]).map(lang => (
+              <button
+                key={lang}
+                onClick={() => setActiveLang(lang)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeLang === lang 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
                 }`}
-              placeholder="Enter the About Us content here..."
-            />
+              >
+                {lang.toUpperCase()}
+              </button>
+            ))}
           </div>
 
-          <div className="space-y-2">
-            <label className={`text-sm font-medium ${config.textMuted}`}>Contact Us</label>
-            <textarea
-              value={contactUs}
-              onChange={(e) => setContactUs(e.target.value)}
-              rows={5}
-              className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${activeTheme === 'light'
-                ? 'bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-400'
-                : 'bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500'
-                }`}
-              placeholder="Enter the Contact Us content here (e.g., email, phone, address, etc.)..."
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className={`text-sm font-medium ${config.textMuted}`}>About Us ({activeLang.toUpperCase()})</label>
+              <textarea
+                dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
+                value={pageContent[activeLang].about}
+                onChange={(e) => setPageContent(prev => ({ ...prev, [activeLang]: { ...prev[activeLang], about: e.target.value } }))}
+                rows={5}
+                className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${activeTheme === 'light'
+                  ? 'bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-400'
+                  : 'bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500'
+                  }`}
+                placeholder={`Enter the About Us content in ${activeLang.toUpperCase()}...`}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className={`text-sm font-medium ${config.textMuted}`}>Contact Us ({activeLang.toUpperCase()})</label>
+              <textarea
+                dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
+                value={pageContent[activeLang].contact}
+                onChange={(e) => setPageContent(prev => ({ ...prev, [activeLang]: { ...prev[activeLang], contact: e.target.value } }))}
+                rows={5}
+                className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${activeTheme === 'light'
+                  ? 'bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-400'
+                  : 'bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500'
+                  }`}
+                placeholder={`Enter the Contact Us content in ${activeLang.toUpperCase()}...`}
+              />
+            </div>
           </div>
 
           <button
@@ -287,7 +344,7 @@ export default function SettingsPage() {
             className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            {isLoadingPages ? 'Saving...' : 'Save Page Content'}
+            {isLoadingPages ? t('adminSettingsSaving') : t('adminSettingsSavePages')}
           </button>
 
           {messagePages && (
