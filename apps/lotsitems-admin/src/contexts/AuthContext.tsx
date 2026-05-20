@@ -42,35 +42,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
         checkConnectivity();
 
-        // Migration: Migrate legacy recommerce/makeuse keys to used4cash
+        // Migration: Migrate legacy recommerce/makeuse/used4cash keys to lotsitems
         const legacyRecommerceUser = localStorage.getItem("recommerce_user");
         const legacyRecommerceToken = localStorage.getItem("recommerce_token");
         const legacyMakeuseUser = localStorage.getItem("makeuse_user");
         const legacyMakeuseToken = localStorage.getItem("makeuse_token");
+        const legacyUsed4cashUser = localStorage.getItem("used4cash_user");
+        const legacyUsed4cashToken = localStorage.getItem("used4cash_token");
 
         if (legacyRecommerceUser && legacyRecommerceToken) {
-            localStorage.setItem("used4cash_user", legacyRecommerceUser);
-            localStorage.setItem("used4cash_token", legacyRecommerceToken);
+            localStorage.setItem("lotsitems_user", legacyRecommerceUser);
+            localStorage.setItem("lotsitems_token", legacyRecommerceToken);
             localStorage.removeItem("recommerce_user");
             localStorage.removeItem("recommerce_token");
         } else if (legacyMakeuseUser && legacyMakeuseToken) {
-            localStorage.setItem("used4cash_user", legacyMakeuseUser);
-            localStorage.setItem("used4cash_token", legacyMakeuseToken);
+            localStorage.setItem("lotsitems_user", legacyMakeuseUser);
+            localStorage.setItem("lotsitems_token", legacyMakeuseToken);
             localStorage.removeItem("makeuse_user");
             localStorage.removeItem("makeuse_token");
+        } else if (legacyUsed4cashUser && legacyUsed4cashToken) {
+            localStorage.setItem("lotsitems_user", legacyUsed4cashUser);
+            localStorage.setItem("lotsitems_token", legacyUsed4cashToken);
+            localStorage.removeItem("used4cash_user");
+            localStorage.removeItem("used4cash_token");
         }
 
         // Hydrate auth state from localStorage
-        const storedUser = localStorage.getItem("used4cash_user");
-        const storedToken = localStorage.getItem("used4cash_token");
+        const storedUser = localStorage.getItem("lotsitems_user");
+        const storedToken = localStorage.getItem("lotsitems_token");
 
         if (storedUser && storedToken) {
             try {
                 setUser(JSON.parse(storedUser));
             } catch (e) {
                 console.error("Failed to parse stored user", e);
-                localStorage.removeItem("used4cash_user");
-                localStorage.removeItem("used4cash_token");
+                localStorage.removeItem("lotsitems_user");
+                localStorage.removeItem("lotsitems_token");
             }
         }
         setIsLoading(false);
@@ -89,8 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (data.success) {
                 const userData = data.user;
                 setUser(userData);
-                localStorage.setItem("used4cash_user", JSON.stringify(userData));
-                localStorage.setItem("used4cash_token", data.token);
+                localStorage.setItem("lotsitems_user", JSON.stringify(userData));
+                localStorage.setItem("lotsitems_token", data.token);
 
                 const dest = userData.role === "ADMIN" ? "/admin" : (userData.role === "VENDOR" ? "/vendor" : (redirectTo || "/profile"));
                 router.push(dest);
@@ -116,8 +123,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (data.success) {
                 const userData = data.user;
                 setUser(userData);
-                localStorage.setItem("used4cash_user", JSON.stringify(userData));
-                localStorage.setItem("used4cash_token", data.token);
+                localStorage.setItem("lotsitems_user", JSON.stringify(userData));
+                localStorage.setItem("lotsitems_token", data.token);
 
                 const dest = userData.role === "ADMIN" ? "/admin" : (userData.role === "VENDOR" ? "/vendor" : (redirectTo || "/assess"));
                 router.push(dest);
@@ -132,8 +139,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = async () => {
         setUser(null);
-        localStorage.removeItem("used4cash_user");
-        localStorage.removeItem("used4cash_token");
+        localStorage.removeItem("lotsitems_user");
+        localStorage.removeItem("lotsitems_token");
         router.push("/");
     };
 

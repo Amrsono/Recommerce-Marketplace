@@ -96,7 +96,7 @@ export interface TranslationDictionary {
 
 export const translations: Record<Locale, TranslationDictionary> = {
   en: {
-    navBrand: "used4cash",
+    navBrand: "Lotsitems",
     navSignIn: "Sign In",
     navDashboard: "Dashboard",
     navAccount: "Account",
@@ -114,9 +114,9 @@ export const translations: Record<Locale, TranslationDictionary> = {
     feature2Desc: "Use your camera to let our Vision model assess the pristine condition of your device securely.",
     feature3Title: "White-glove Service",
     feature3Desc: "For complex devices, our certified engineers visit you within 24 hours to hand over the cash.",
-    footerText: "© 2026 used4cash Marketplace. Don't trash it, cash it.",
+    footerText: "© 2026 Lotsitems Marketplace. Don't trash it, cash it.",
     modalTitle: "The Marketplace Journey",
-    modalSubtitle: "used4cash connects your device to a live network of verified vendors competing to give you the best price. No scams, no low-balls, just transparent bidding and data-driven payouts.",
+    modalSubtitle: "Lotsitems connects your device to a live network of verified vendors competing to give you the best price. No scams, no low-balls, just transparent bidding and data-driven payouts.",
     modalStep1Title: "1. The AI Assessment",
     modalStep1Desc: "Start by entering your device metadata. Our conversational AI agent will seamlessly guide you and request a visual diagnostic scan via your device camera to detect dents or scratches.",
     modalStep2Title: "2. Instant Valuation",
@@ -189,7 +189,7 @@ export const translations: Record<Locale, TranslationDictionary> = {
     adminLanguage: "Language"
   },
   fr: {
-    navBrand: "used4cash",
+    navBrand: "Lotsitems",
     navSignIn: "Se connecter",
     navDashboard: "Tableau de bord",
     navAccount: "Compte",
@@ -207,9 +207,9 @@ export const translations: Record<Locale, TranslationDictionary> = {
     feature2Desc: "Utilisez votre appareil photo pour laisser notre modèle de vision évaluer l'état impeccable de votre appareil en toute sécurité.",
     feature3Title: "Service haut de gamme",
     feature3Desc: "Pour les appareils complexes, nos ingénieurs certifiés se déplacent chez vous sous 24 heures pour vous remettre l'argent.",
-    footerText: "© 2026 used4cash Marketplace. Ne le jetez pas, encaissez-le.",
+    footerText: "© 2026 Lotsitems Marketplace. Ne le jetez pas, encaissez-le.",
     modalTitle: "Le parcours du marché",
-    modalSubtitle: "used4cash connecte votre appareil à un réseau en direct de vendeurs vérifiés en compétition pour vous offrir le meilleur prix. Pas d'arnaques, juste des enchères transparentes et des paiements basés sur les données.",
+    modalSubtitle: "Lotsitems connecte votre appareil à un réseau en direct de vendeurs vérifiés en compétition pour vous offrir le meilleur prix. Pas d'arnaques, juste des enchères transparentes et des paiements basés sur les données.",
     modalStep1Title: "1. L'évaluation par IA",
     modalStep1Desc: "Commencez par saisir les métadonnées de votre appareil. Notre agent d'IA conversationnel vous guidera et demandera une analyse de diagnostic visuel via votre caméra pour détecter les bosses ou rayures.",
     modalStep2Title: "2. Évaluation instantanée",
@@ -282,7 +282,7 @@ export const translations: Record<Locale, TranslationDictionary> = {
     adminLanguage: "Langue"
   },
   es: {
-    navBrand: "used4cash",
+    navBrand: "Lotsitems",
     navSignIn: "Iniciar sesión",
     navDashboard: "Tablero",
     navAccount: "Cuenta",
@@ -300,9 +300,9 @@ export const translations: Record<Locale, TranslationDictionary> = {
     feature2Desc: "Usa tu cámara para que nuestro modelo de visión evalúe el estado impecable de tu dispositivo de forma segura.",
     feature3Title: "Servicio de guante blanco",
     feature3Desc: "Para dispositivos complejos, nuestros ingenieros certificados te visitan en 24 horas para entregarte el efectivo.",
-    footerText: "© 2026 used4cash Marketplace. No lo tires, cóbralo.",
+    footerText: "© 2026 Lotsitems Marketplace. No lo tires, cóbralo.",
     modalTitle: "El viaje del mercado",
-    modalSubtitle: "used4cash conecta tu dispositivo a una red en vivo de vendedores verificados que compiten para darte el mejor precio. Sin estafas, solo ofertas transparentes y pagos basados en datos.",
+    modalSubtitle: "Lotsitems conecta tu dispositivo a una red en vivo de vendedores verificados que compiten para darte el mejor precio. Sin estafas, solo ofertas transparentes y pagos basados en datos.",
     modalStep1Title: "1. La evaluación de IA",
     modalStep1Desc: "Comienza ingresando los metadatos de tu dispositivo. Nuestro agente conversacional de IA te guiará y solicitará un análisis de diagnóstico visual a través de tu cámara para detectar abolladuras o arañazos.",
     modalStep2Title: "2. Valoración instantánea",
@@ -375,7 +375,7 @@ export const translations: Record<Locale, TranslationDictionary> = {
     adminLanguage: "Idioma"
   },
   pt: {
-    navBrand: "used4cash",
+    navBrand: "Lotsitems",
     navSignIn: "Entrar",
     navDashboard: "Painel",
     navAccount: "Conta",
@@ -393,9 +393,9 @@ export const translations: Record<Locale, TranslationDictionary> = {
     feature2Desc: "Use sua câmera para que nosso modelo de visão avalie o estado impecável do seu aparelho com segurança.",
     feature3Title: "Serviço premium",
     feature3Desc: "Para aparelhos complexos, nossos engenheiros certificados visitam você em até 24 horas para entregar o dinheiro.",
-    footerText: "© 2026 used4cash Marketplace. Não jogue fora, fature.",
+    footerText: "© 2026 Lotsitems Marketplace. Não jogue fora, fature.",
     modalTitle: "A jornada do marketplace",
-    modalSubtitle: "used4cash conecta seu dispositivo a uma rede ao vivo de vendedores verificados competindo para lhe dar o melhor preço. Sem golpes, apenas lances transparentes e pagamentos baseados em dados.",
+    modalSubtitle: "Lotsitems conecta seu dispositivo a uma rede ao vivo de vendedores verificados competindo para lhe dar o melhor preço. Sem golpes, apenas lances transparentes e pagamentos baseados em dados.",
     modalStep1Title: "1. A avaliação por IA",
     modalStep1Desc: "Comece inserindo os metadados do seu aparelho. Nosso agente de IA conversacional guiará você e solicitará uma análise visual pela câmera para detectar amassados ou arranhões.",
     modalStep2Title: "2. Avaliação imediata",
@@ -468,7 +468,7 @@ export const translations: Record<Locale, TranslationDictionary> = {
     adminLanguage: "Idioma"
   },
   ar: {
-    navBrand: "used4cash",
+    navBrand: "Lotsitems",
     navSignIn: "تسجيل الدخول",
     navDashboard: "لوحة التحكم",
     navAccount: "الحساب",
@@ -486,9 +486,9 @@ export const translations: Record<Locale, TranslationDictionary> = {
     feature2Desc: "استخدم الكاميرا لتمكين نموذج الرؤية الخاص بنا من تقييم الحالة الجيدة لجهازك بشكل آمن.",
     feature3Title: "خدمة راقية متكاملة",
     feature3Desc: "للأجهزة المعقدة، يقوم مهندسونا المعتمدون بزيارتك في غضون 24 ساعة لتسليم الكاش يداً بيد.",
-    footerText: "© 2026 سوق used4cash. لا ترميها، كيشها.",
+    footerText: "© 2026 سوق Lotsitems. لا ترميها، كيشها.",
     modalTitle: "رحلة البيع في السوق",
-    modalSubtitle: "يربط used4cash جهازك بشبكة حية من البائعين المعتمدين الذين يتنافسون لتقديم أفضل سعر لك. لا احتيال، لا تبخيس للأسعار، فقط مزايدة شفافة ومدفوعات مبنية على البيانات.",
+    modalSubtitle: "يربط Lotsitems جهازك بشبكة حية من البائعين المعتمدين الذين يتنافسون لتقديم أفضل سعر لك. لا احتيال، لا تبخيس للأسعار، فقط مزايدة شفافة ومدفوعات مبنية على البيانات.",
     modalStep1Title: "١. التقييم بالذكاء الاصطناعي",
     modalStep1Desc: "ابدأ بإدخال بيانات جهازك. سيقوم وكيلنا الحواري المدعوم بالذكاء الاصطناعي بتوجيهك بسلاسة وطلب فحص تشخيصي مرئي عبر الكاميرا الخاصة بك للكشف عن أي صدمات أو خدوش.",
     modalStep2Title: "٢. تقييم فوري للأسعار",

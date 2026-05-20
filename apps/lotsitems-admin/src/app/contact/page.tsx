@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Mail, MessageSquare, MapPin, Phone, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 
 const contactMethods = [
-    { icon: Mail, title: "Email Us", value: "hello@used4cash.com", desc: "We typically reply within 2 hours.", color: "blue" },
+    { icon: Mail, title: "Email Us", value: "hello@lotsitems.com", desc: "We typically reply within 2 hours.", color: "blue" },
     { icon: Phone, title: "Call Us", value: "+971 4 123 4567", desc: "Sun–Thu, 9am – 6pm GST.", color: "purple" },
     { icon: MapPin, title: "Our Office", value: "Dubai, UAE", desc: "MENA HQ — Downtown Dubai.", color: "emerald" },
 ];
@@ -37,9 +37,9 @@ export default function ContactPage() {
             <nav className="container mx-auto px-6 py-6 flex justify-between items-center border-b border-slate-800/50 sticky top-0 z-50 bg-black/40 backdrop-blur-xl">
                 <Link href="/" className="flex items-center gap-3">
                     <div className="relative w-9 h-9 overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
-                        <Image src="/logo.png" alt="used4cash" fill className="object-contain" />
+                        <Image src="/logo.png" alt="Lotsitems" fill className="object-contain" />
                     </div>
-                    <span className="font-bold text-xl tracking-tight text-white">used4cash</span>
+                    <span className="font-bold text-xl tracking-tight text-white">Lotsitems</span>
                 </Link>
                 <div className="flex items-center gap-6 text-sm font-medium text-slate-400">
                     <Link href="/about" className="hover:text-white transition-colors">About</Link>
@@ -200,7 +200,7 @@ export default function ContactPage() {
             </section>
 
             <footer className="border-t border-slate-800/50 py-8 text-center text-slate-500 text-sm">
-                <p>© 2026 used4cash Marketplace. Don&apos;t trash it, cash it.</p>
+                <p>© 2026 Lotsitems Marketplace. Don&apos;t trash it, cash it.</p>
             </footer>
         </div>
     );

@@ -36,7 +36,17 @@ type DeviceInfo = {
     condition: string;    // from step 3
     askedPrice: string;   // from step 4
     scannedPhoto: string | null; // base64 or object URL
+    suggestedPrice?: number; // from vision AI
 };
+
+function adjustPriceForCondition(basePrice: number, originalCond: string, newCond: string): number {
+    const multipliers: Record<string, number> = { Mint: 1.0, Good: 0.75, Poor: 0.4, Broken: 0.15 };
+    const origMult = multipliers[originalCond] ?? 0.75;
+    const newMult = multipliers[newCond] ?? 0.75;
+    const safeOrigMult = origMult === 0 ? 0.75 : origMult;
+    const mintBase = basePrice / safeOrigMult;
+    return Math.round(mintBase * newMult);
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -165,7 +175,7 @@ export default function AssessPage() {
             setStep("ASK_CONDITION");
             const sid = `sid_${Date.now()}`;
             setHandoffSessionId(sid);
-            aiReply(<ConditionPrompt onScan={triggerScan} sessionId={sid} />, 1000);
+            aiReply(<ConditionPrompt onScan={triggerScan} sessionId={sid} onPresetSelect={handlePresetSelect} />, 1000);
 
         } else if (step === "ASK_CONDITION") {
             // Manual condition entry
@@ -182,7 +192,7 @@ export default function AssessPage() {
             // Show the final offer card
             const finalDevice = { ...device, askedPrice: price || text };
             const cond = finalDevice.condition || "Good";
-            const estimated = estimatePrice(cond, finalDevice.deviceName);
+            const estimated = device.suggestedPrice ?? estimatePrice(cond, finalDevice.deviceName);
             aiReply(<FinalOfferCard
                 device={device.deviceName}
                 storage={device.storage}
@@ -201,6 +211,136 @@ export default function AssessPage() {
         fileInputRef.current?.click();
     };
 
+    const updateDeviceConditionAndProceed = useCallback((cond: string, backendPrice: number, originalCond: string) => {
+        const finalPrice = cond === originalCond ? backendPrice : adjustPriceForCondition(backendPrice, originalCond, cond);
+        
+        setDevice(d => ({ 
+            ...d, 
+            condition: cond,
+            suggestedPrice: finalPrice
+        }));
+        setScanState("done");
+        setStep("ASK_PRICE");
+        aiReply(`Condition locked as **${cond}**. What's your asking price in £? (Enter numbers only, e.g. 450)`);
+    }, [aiReply]);
+
+    const processImageEvaluation = useCallback(async (base64Data: string, displayUrl: string) => {
+        setScanPhotoUrl(displayUrl);
+        setScanState("analysing");
+        setIsTyping(true);
+
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+            const response = await fetch(`${apiUrl}/devices/evaluate-image`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    image: base64Data,
+                    deviceName: device.deviceName,
+                    storage: device.storage
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to evaluate image");
+            }
+
+            const data = await response.json();
+            setIsTyping(false);
+
+            if (data.success) {
+                if (!data.isReal) {
+                    setScanState("idle");
+                    setMessages(prev => [...prev, {
+                        role: "ai",
+                        content: (
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2 text-amber-400 font-semibold text-sm">
+                                    <AlertTriangle className="w-4.5 h-4.5 animate-bounce" />
+                                    Image Verification Required
+                                </div>
+                                <p className="text-slate-300 text-sm">
+                                    {data.retryMessage || `Oops! That photo doesn't look like a mobile phone, tablet, or laptop. To help us give you the most accurate price, could you please take a clear, well-lit photo of your device's front or back and try again? We'd love to help you get some quick cash for your tech!`}
+                                </p>
+                                <div className="border-t border-slate-800/80 pt-3 mt-1">
+                                    <ConditionPrompt onScan={triggerScan} sessionId={handoffSessionId || undefined} onPresetSelect={handlePresetSelect} />
+                                </div>
+                            </div>
+                        )
+                    }]);
+                } else {
+                    setScanState("done");
+                    setDevice(d => ({ 
+                        ...d, 
+                        scannedPhoto: base64Data,
+                        condition: data.condition,
+                        suggestedPrice: data.suggestedPrice
+                    }));
+
+                    setMessages(prev => [...prev, {
+                        role: "ai",
+                        content: (
+                            <ScanResultCard 
+                                initialCondition={data.condition}
+                                reasoning={data.reasoning}
+                                onConfirm={(cond) => {
+                                    updateDeviceConditionAndProceed(cond, data.suggestedPrice, data.condition);
+                                }} 
+                            />
+                        )
+                    }]);
+                }
+            } else {
+                throw new Error(data.error || "Evaluation failed");
+            }
+        } catch (err) {
+            console.error("Image evaluation error:", err);
+            setIsTyping(false);
+            setScanState("idle");
+            setMessages(prev => [...prev, {
+                role: "ai",
+                content: `Sorry, we encountered a technical issue while evaluating the image. Please try uploading again or type your condition manually.`
+            }]);
+        }
+    }, [device.deviceName, device.storage, handoffSessionId, updateDeviceConditionAndProceed]);
+
+    function handlePresetSelect(presetType: string) {
+        let base64 = "";
+        let displayName = "";
+        let displayUrl = "";
+
+        if (presetType === "mint-iphone") {
+            base64 = "data:image/jpeg;base64,mint_iphone_preset_data_" + "A".repeat(1100);
+            displayName = "📱 Real iPhone 15 Pro (Mint)";
+            displayUrl = "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&auto=format&fit=crop&q=60";
+        } else if (presetType === "broken-galaxy") {
+            base64 = "data:image/jpeg;base64,broken_galaxy_preset_data_" + "A".repeat(1100);
+            displayName = "💥 Real Galaxy S24 Ultra (Cracked Screen)";
+            displayUrl = "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&auto=format&fit=crop&q=60";
+        } else if (presetType === "pizza") {
+            base64 = "data:image/jpeg;base64,fake_pizza_preset_data_" + "A".repeat(1100);
+            displayName = "🍕 Fake Photo (Pizza Slice)";
+            displayUrl = "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&auto=format&fit=crop&q=60";
+        } else if (presetType === "document") {
+            base64 = "data:image/jpeg;base64,fake_document_preset_data_" + "A".repeat(1100);
+            displayName = "📄 Fake Photo (Screenshot/Document)";
+            displayUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=60";
+        }
+
+        setMessages(prev => [...prev, {
+            role: "user",
+            content: (
+                <div className="space-y-2">
+                    <p className="text-sm opacity-80">📸 Preset submitted: <strong>{displayName}</strong></p>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={displayUrl} alt="Preset scan" className="rounded-xl max-h-48 object-cover w-full" />
+                </div>
+            )
+        }]);
+
+        processImageEvaluation(base64, displayUrl);
+    }
+
     const handleMobileUpload = useCallback((base64Url: string) => {
         setScanPhotoUrl(base64Url);
         setScanState("analysing");
@@ -217,21 +357,8 @@ export default function AssessPage() {
             )
         }]);
 
-        setIsTyping(true);
-        setTimeout(() => {
-            setScanState("done");
-            setIsTyping(false);
-            setMessages(prev => [...prev, {
-                role: "ai",
-                content: <ScanResultCard onConfirm={(cond) => {
-                    setDevice(d => ({ ...d, condition: cond }));
-                    setScanState("done");
-                    setStep("ASK_PRICE");
-                    aiReply(`Condition locked as **${cond}**. What's your asking price in £? (Enter numbers only, e.g. 450)`);
-                }} />
-            }]);
-        }, 2500);
-    }, [aiReply]);
+        processImageEvaluation(base64Url, base64Url);
+    }, [processImageEvaluation]);
 
     const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -241,15 +368,15 @@ export default function AssessPage() {
         setScanPhotoUrl(url);
         setScanState("analysing");
 
-        // Convert to base64 for persistence
+        let base64 = "";
         try {
-            const base64 = await fileToBase64(file);
+            base64 = await fileToBase64(file);
             setDevice(d => ({ ...d, scannedPhoto: base64 }));
         } catch (err) {
             console.error("File conversion failed:", err);
+            return;
         }
 
-        // Add a user-side "photo sent" message
         setMessages(prev => [...prev, {
             role: "user",
             content: (
@@ -261,23 +388,7 @@ export default function AssessPage() {
             )
         }]);
 
-        // Simulate AI vision analysis (2.5 sec)
-        setIsTyping(true);
-        setTimeout(() => {
-            setScanState("done");
-            setIsTyping(false);
-
-            // Show scan result & ask condition to confirm
-            setMessages(prev => [...prev, {
-                role: "ai",
-                content: <ScanResultCard onConfirm={(cond) => {
-                    setDevice(d => ({ ...d, condition: cond }));
-                    setScanState("done");
-                    setStep("ASK_PRICE");
-                    aiReply(`Condition locked as **${cond}**. What's your asking price in £? (Enter numbers only, e.g. 450)`);
-                }} />
-            }]);
-        }, 2500);
+        processImageEvaluation(base64, url);
     };
 
     // ─── Submit ticket ───────────────────────────────────────────────────────
@@ -476,7 +587,15 @@ function StepPills({ current }: { current: string }) {
     );
 }
 
-function ConditionPrompt({ onScan, sessionId }: { onScan: () => void; sessionId?: string }) {
+function ConditionPrompt({ 
+    onScan, 
+    sessionId, 
+    onPresetSelect 
+}: { 
+    onScan: () => void; 
+    sessionId?: string; 
+    onPresetSelect?: (presetType: string) => void;
+}) {
     const [showQR, setShowQR] = useState(false);
     const domain = typeof window !== 'undefined' ? window.location.origin : '';
     const qrUrl = `${domain}/assess/camera/${sessionId}`;
@@ -489,7 +608,7 @@ function ConditionPrompt({ onScan, sessionId }: { onScan: () => void; sessionId?
             <div className="flex gap-2">
                 <button
                     onClick={onScan}
-                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white rounded-xl px-4 py-3.5 flex items-center justify-center gap-2 text-sm font-semibold transition-all active:scale-95"
+                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white rounded-xl px-4 py-3.5 flex items-center justify-center gap-2 text-sm font-semibold transition-all active:scale-95 border border-slate-700/50"
                 >
                     <UploadCloud className="w-5 h-5 text-blue-400" />
                     From PC
@@ -512,6 +631,56 @@ function ConditionPrompt({ onScan, sessionId }: { onScan: () => void; sessionId?
                     <p className="text-slate-500 text-xs text-center mt-1">Leave this page open to sync automatically</p>
                 </div>
             )}
+
+            {/* Quick Test Presets (Wow-Factor UI block) */}
+            <div className="border-t border-slate-800/80 pt-4 mt-2">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                    Quick Test Presets (Instant AI Evaluation)
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                    <button
+                        onClick={() => onPresetSelect?.("mint-iphone")}
+                        className="bg-slate-900/60 hover:bg-slate-800/80 border border-emerald-500/30 hover:border-emerald-500/60 rounded-xl p-3 text-left transition-all hover:scale-[1.02] active:scale-95 flex flex-col justify-between h-20"
+                    >
+                        <div className="flex justify-between items-start w-full">
+                            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Mint Preset</span>
+                            <span className="text-sm">📱</span>
+                        </div>
+                        <div className="text-xs text-slate-300 font-semibold truncate w-full">Real iPhone (Mint)</div>
+                    </button>
+                    <button
+                        onClick={() => onPresetSelect?.("broken-galaxy")}
+                        className="bg-slate-900/60 hover:bg-slate-800/80 border border-red-500/30 hover:border-red-500/60 rounded-xl p-3 text-left transition-all hover:scale-[1.02] active:scale-95 flex flex-col justify-between h-20"
+                    >
+                        <div className="flex justify-between items-start w-full">
+                            <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider">Broken Preset</span>
+                            <span className="text-sm">💥</span>
+                        </div>
+                        <div className="text-xs text-slate-300 font-semibold truncate w-full">Real Galaxy (Cracked)</div>
+                    </button>
+                    <button
+                        onClick={() => onPresetSelect?.("pizza")}
+                        className="bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/30 hover:border-amber-500/60 rounded-xl p-3 text-left transition-all hover:scale-[1.02] active:scale-95 flex flex-col justify-between h-20"
+                    >
+                        <div className="flex justify-between items-start w-full">
+                            <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Fake Preset</span>
+                            <span className="text-sm">🍕</span>
+                        </div>
+                        <div className="text-xs text-slate-300 font-semibold truncate w-full">Pizza Photo</div>
+                    </button>
+                    <button
+                        onClick={() => onPresetSelect?.("document")}
+                        className="bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/30 hover:border-amber-500/60 rounded-xl p-3 text-left transition-all hover:scale-[1.02] active:scale-95 flex flex-col justify-between h-20"
+                    >
+                        <div className="flex justify-between items-start w-full">
+                            <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Fake Preset</span>
+                            <span className="text-sm">📄</span>
+                        </div>
+                        <div className="text-xs text-slate-300 font-semibold truncate w-full">Screenshot/Doc</div>
+                    </button>
+                </div>
+            </div>
             
             <p className="text-xs text-slate-400 text-center">
                 Or just type: <span className="text-slate-300 font-medium">Mint</span>, <span className="text-slate-300 font-medium">Good</span>, <span className="text-slate-300 font-medium">Poor</span>, or <span className="text-slate-300 font-medium">Broken</span>
@@ -520,45 +689,83 @@ function ConditionPrompt({ onScan, sessionId }: { onScan: () => void; sessionId?
     );
 }
 
-function ScanResultCard({ onConfirm }: { onConfirm: (condition: string) => void }) {
+function ScanResultCard({ 
+    initialCondition, 
+    reasoning, 
+    onConfirm 
+}: { 
+    initialCondition: string; 
+    reasoning: string; 
+    onConfirm: (condition: string) => void;
+}) {
     const [confirmed, setConfirmed] = useState(false);
+    const [selected, setSelected] = useState(initialCondition);
+
     const conditions = [
         { label: "Mint", desc: "No visible scratches or dents", color: "emerald" },
         { label: "Good", desc: "Minor surface marks only", color: "blue" },
         { label: "Poor", desc: "Moderate wear or damage visible", color: "amber" },
         { label: "Broken", desc: "Cracks, non-functional areas", color: "red" },
     ];
+    
     const colorMap: Record<string, string> = {
-        emerald: "border-emerald-500 bg-emerald-500/10 text-emerald-400",
-        blue: "border-blue-500 bg-blue-500/10 text-blue-400",
-        amber: "border-amber-500 bg-amber-500/10 text-amber-400",
-        red: "border-red-500 bg-red-500/10 text-red-400",
+        emerald: "border-emerald-500/20 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500/10",
+        blue: "border-blue-500/20 bg-blue-500/5 text-blue-400 hover:bg-blue-500/10",
+        amber: "border-amber-500/20 bg-amber-500/5 text-amber-400 hover:bg-amber-500/10",
+        red: "border-red-500/20 bg-red-500/5 text-red-400 hover:bg-red-500/10",
+    };
+
+    const activeColorMap: Record<string, string> = {
+        emerald: "border-emerald-500 bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30",
+        blue: "border-blue-500 bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/30",
+        amber: "border-amber-500 bg-amber-500/15 text-amber-300 ring-1 ring-amber-500/30",
+        red: "border-red-500 bg-red-500/15 text-red-300 ring-1 ring-red-500/30",
     };
 
     if (confirmed) {
-        return <p className="text-emerald-400 font-medium flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Condition confirmed!</p>;
+        return (
+            <div className="space-y-1.5">
+                <p className="text-emerald-400 font-medium flex items-center gap-2">
+                    <CheckCircle2 className="w-4.5 h-4.5" /> Condition confirmed as <strong className="underline decoration-wavy decoration-emerald-500/50">{selected}</strong>!
+                </p>
+                <p className="text-slate-400 text-xs italic font-normal ml-6">"{reasoning}"</p>
+            </div>
+        );
     }
 
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-2 text-blue-400 font-semibold text-sm">
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4.5 h-4.5 animate-pulse" />
                 Vision AI Analysis Complete
             </div>
-            <p className="text-slate-300 text-sm">
-                Our Vision AI has analysed the photo. The estimated condition is <strong className="text-white">Good</strong> based on visible surface reflections and screen integrity. Please confirm or correct below:
+            <div className="bg-slate-950/60 rounded-xl p-3.5 border border-slate-800/80 space-y-1">
+                <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">AI Detected Condition</p>
+                <p className="text-white font-bold text-sm flex items-center gap-2">
+                    <span className={`inline-block w-2.5 h-2.5 rounded-full ${initialCondition === 'Mint' ? 'bg-emerald-500 shadow-lg shadow-emerald-500/50' : initialCondition === 'Good' ? 'bg-blue-500 shadow-lg shadow-blue-500/50' : initialCondition === 'Poor' ? 'bg-amber-500 shadow-lg shadow-amber-500/50' : 'bg-red-500 shadow-lg shadow-red-500/50'}`}></span>
+                    {initialCondition}
+                </p>
+                <p className="text-slate-300 text-xs mt-1.5 leading-relaxed italic">
+                    "{reasoning}"
+                </p>
+            </div>
+            <p className="text-slate-300 text-xs">
+                Please confirm or correct the condition of your device to lock the estimate:
             </p>
             <div className="grid grid-cols-2 gap-2">
-                {conditions.map(c => (
-                    <button
-                        key={c.label}
-                        onClick={() => { setConfirmed(true); onConfirm(c.label); }}
-                        className={`border rounded-xl p-3 text-left transition-all hover:scale-[1.02] active:scale-95 ${colorMap[c.color]}`}
-                    >
-                        <div className="font-semibold text-sm">{c.label}</div>
-                        <div className="text-xs opacity-70 mt-0.5">{c.desc}</div>
-                    </button>
-                ))}
+                {conditions.map(c => {
+                    const isActive = selected === c.label;
+                    return (
+                        <button
+                            key={c.label}
+                            onClick={() => { setSelected(c.label); setConfirmed(true); onConfirm(c.label); }}
+                            className={`border rounded-xl p-3 text-left transition-all hover:scale-[1.02] active:scale-95 ${isActive ? activeColorMap[c.color] : colorMap[c.color]}`}
+                        >
+                            <div className="font-semibold text-sm">{c.label}</div>
+                            <div className="text-xs opacity-75 mt-0.5">{c.desc}</div>
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );

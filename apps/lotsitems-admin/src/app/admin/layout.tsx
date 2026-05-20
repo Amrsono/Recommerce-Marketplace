@@ -31,9 +31,9 @@ export default function AdminLayout({ children }: Readonly<{ children: React.Rea
                 <aside className={`w-full md:w-64 ${config.sidebar} border-r ${config.border} flex flex-col p-4 transition-colors duration-300`}>
                     <div className="flex items-center gap-3 mb-8 px-2">
                         <div className={`relative w-8 h-8 overflow-hidden rounded-md border ${config.border} bg-slate-950`}>
-                            <Image src="/logo.png" alt="used4cash Logo" fill className="object-contain" />
+                            <Image src="/logo.png" alt="Lotsitems Logo" fill className="object-contain" />
                         </div>
-                        <span className="font-bold text-xl tracking-tight">used4cash</span>
+                        <span className="font-bold text-xl tracking-tight">Lotsitems</span>
                     </div>
                     <nav className="flex-1 space-y-1">
                         {navLinks.map(({ href, label, icon: Icon, exact }) => {

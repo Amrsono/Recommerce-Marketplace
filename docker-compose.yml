@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: used4cash
+      POSTGRES_DB: lotsitems
     ports:
       - "5432:5432"
     volumes:

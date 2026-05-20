@@ -1,9 +1,9 @@
 {
-  "name": "used4cash-marketplace",
+  "name": "lotsitems-marketplace",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "apps/used4cash-admin",
+    "apps/lotsitems-admin",
     "apps/api",
     "apps/ai-pricing",
     "apps/mobile",

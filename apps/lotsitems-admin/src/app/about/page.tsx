@@ -40,9 +40,9 @@ export default function AboutPage() {
             <nav className="container mx-auto px-6 py-6 flex justify-between items-center border-b border-slate-800/50 sticky top-0 z-50 bg-black/40 backdrop-blur-xl">
                 <Link href="/" className="flex items-center gap-3">
                     <div className="relative w-9 h-9 overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
-                        <Image src="/logo.png" alt="used4cash" fill className="object-contain" />
+                        <Image src="/logo.png" alt="Lotsitems" fill className="object-contain" />
                     </div>
-                    <span className="font-bold text-xl tracking-tight text-white">used4cash</span>
+                    <span className="font-bold text-xl tracking-tight text-white">Lotsitems</span>
                 </Link>
                 <div className="flex items-center gap-6 text-sm font-medium text-slate-400">
                     <Link href="/about" className="text-white border-b border-blue-500 pb-0.5">About</Link>
@@ -62,7 +62,7 @@ export default function AboutPage() {
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">re-sells electronics</span>
                 </h1>
                 <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                    used4cash was built out of frustration. Selling your old phone shouldn&apos;t mean lowball offers, sketchy buyers, or weeks of waiting. We built a transparent, AI-powered marketplace where verified vendors compete for your device — and you always win.
+                    Lotsitems was built out of frustration. Selling your old phone shouldn&apos;t mean lowball offers, sketchy buyers, or weeks of waiting. We built a transparent, AI-powered marketplace where verified vendors compete for your device — and you always win.
                 </p>
             </section>
 
@@ -83,7 +83,7 @@ export default function AboutPage() {
                         <h2 className="text-4xl font-bold text-white mb-6 leading-tight">The problem we&apos;re solving</h2>
                         <div className="space-y-4 text-slate-400 leading-relaxed text-lg">
                             <p>The secondary electronics market is broken. Marketplaces are flooded with fraud, buyers lowball, and sellers are left feeling robbed.</p>
-                            <p>We built used4cash on a fundamentally different principle: <span className="text-slate-200 font-medium">let the market decide the price — transparently, in real time, with no room for manipulation.</span></p>
+                            <p>We built Lotsitems on a fundamentally different principle: <span className="text-slate-200 font-medium">let the market decide the price — transparently, in real time, with no room for manipulation.</span></p>
                             <p>Our AI establishes a fair baseline. Then verified vendors compete. The seller chooses the best offer. Our engineers verify the device. Everyone wins.</p>
                         </div>
                         <Link href="/offer" className="inline-flex items-center gap-2 mt-8 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full font-semibold transition-all shadow-lg shadow-blue-600/20">
@@ -135,7 +135,7 @@ export default function AboutPage() {
 
             <section className="container mx-auto px-6 py-24 border-t border-slate-800/50">
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl font-bold text-white mb-4">The people behind used4cash</h2>
+                    <h2 className="text-4xl font-bold text-white mb-4">The people behind Lotsitems</h2>
                     <p className="text-slate-400 text-lg max-w-xl mx-auto">A lean, ambitious team on a mission to make electronics resale radically fair.</p>
                 </div>
                 <div className="flex flex-col md:flex-row gap-6 justify-center max-w-3xl mx-auto">
@@ -169,7 +169,7 @@ export default function AboutPage() {
             </section>
 
             <footer className="border-t border-slate-800/50 py-8 text-center text-slate-500 text-sm">
-                <p>© 2026 used4cash Marketplace. Don&apos;t trash it, cash it.</p>
+                <p>© 2026 Lotsitems Marketplace. Don&apos;t trash it, cash it.</p>
             </footer>
         </div>
     );

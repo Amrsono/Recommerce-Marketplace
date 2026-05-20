@@ -1,6 +1,6 @@
 {
   "installCommand": "npm install",
-  "buildCommand": "npm run build --workspace=used4cash-admin",
+  "buildCommand": "npm run build --workspace=lotsitems-admin",
   "framework": "nextjs",
   "ignoreCommand": "git diff --quiet HEAD^ HEAD ./"
 }
