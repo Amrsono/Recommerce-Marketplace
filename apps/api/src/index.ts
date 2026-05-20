@@ -39,16 +39,22 @@ app.get('/api/tickets', async (req, res) => {
         });
         console.log(`Fetched ${tickets.length} tickets`);
         // @ts-ignore: Prisma types across workspace bounds lose include inference
-        const formattedTickets = tickets.map(ticket => ({
-            id: ticket.id,
-            device: `${ticket.device.brand} ${ticket.device.model}`,
-            status: ticket.status,
-            slaDeadline: ticket.slaDeadline.toISOString(),
-            isUrgent: ticket.isUrgent || (new Date(ticket.slaDeadline).getTime() - new Date().getTime() < 12 * 60 * 60 * 1000),
-            estimatedVal: ticket.device.estimatedVal,
-            condition: ticket.device.condition,
-            specs: ticket.device.specs,
-        }));
+        const formattedTickets = tickets.map(ticket => {
+            const specs: any = ticket.device.specs || {};
+            return {
+                id: ticket.id,
+                device: `${ticket.device.brand} ${ticket.device.model}`,
+                status: ticket.status,
+                slaDeadline: ticket.slaDeadline.toISOString(),
+                isUrgent: ticket.isUrgent || (new Date(ticket.slaDeadline).getTime() - new Date().getTime() < 12 * 60 * 60 * 1000),
+                estimatedVal: ticket.device.estimatedVal,
+                condition: ticket.device.condition,
+                specs: ticket.device.specs,
+                evaluationMethod: specs.evaluationMethod || 'home-visit',
+                storeName: specs.storeName || null,
+                storeAddress: specs.address && specs.evaluationMethod === 'store' ? specs.address : null,
+            };
+        });
         res.json({ success: true, tickets: formattedTickets });
     } catch (error) {
         console.error('Error fetching tickets:', error);
@@ -170,7 +176,7 @@ app.patch('/api/tickets/:id/status', async (req, res) => {
 
         const data: any = {};
         if (status) {
-            if (!['OPEN', 'PRICING_ESTIMATED', 'ENGINEER_VISIT_SCHEDULED', 'RESOLVED', 'REJECTED'].includes(status)) {
+            if (!['OPEN', 'PRICING_ESTIMATED', 'ENGINEER_VISIT_SCHEDULED', 'STORE_VISIT_SCHEDULED', 'RESOLVED', 'REJECTED'].includes(status)) {
                 return res.status(400).json({ success: false, error: 'Invalid status' });
             }
             data.status = status;
@@ -199,6 +205,22 @@ app.patch('/api/tickets/:id/status', async (req, res) => {
     } catch (error) {
         console.error('Error updating ticket:', error);
         res.status(500).json({ success: false, error: 'Failed to update ticket' });
+    }
+});
+
+// Mark a store-visit ticket as arrived (customer walked into store)
+app.post('/api/tickets/:id/mark-arrived', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ticket = await prisma.ticket.update({
+            where: { id },
+            data: { status: 'RESOLVED' },
+            include: { device: true }
+        });
+        res.json({ success: true, ticket });
+    } catch (error) {
+        console.error('Error marking arrived:', error);
+        res.status(500).json({ success: false, error: 'Failed to mark arrived' });
     }
 });
 

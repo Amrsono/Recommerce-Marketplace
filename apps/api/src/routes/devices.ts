@@ -299,7 +299,16 @@ router.post('/submit', async (req: Request, res: Response) => {
             },
         });
 
-        // 4. Create Ticket for SLA Tracking
+        // 4. Determine initial ticket status
+        // Store-visit customers self-direct to a store — no admin scheduling needed
+        const specsObj = (specs as any) || {};
+        const evaluationMethod = specsObj.evaluationMethod || 'home-visit';
+        let initialStatus = status || 'PRICING_ESTIMATED';
+        if (!status && evaluationMethod === 'store') {
+            initialStatus = 'STORE_VISIT_SCHEDULED';
+        }
+
+        // 5. Create Ticket for SLA Tracking
         const slaDeadline = new Date();
         slaDeadline.setHours(slaDeadline.getHours() + 48);
 
@@ -308,10 +317,9 @@ router.post('/submit', async (req: Request, res: Response) => {
                 deviceId: device.id,
                 customerId: user.id,
                 slaDeadline,
-                status: status || 'PRICING_ESTIMATED'
+                status: initialStatus,
             }
         });
-
 
         res.json({ success: true, device, ticket });
     } catch (error) {
