@@ -12,29 +12,29 @@ function estimatePrice(condition: string, model: string): number {
     else if (lower.includes('macbook') || lower.includes('ipad')) base = 650;
 
     const multiplier: Record<string, number> = {
-        Mint: 1.0, Good: 0.75, Poor: 0.35, Broken: 0.15,
+        Mint: 1.0, Good: 0.75, Poor: 0.35, Complex: 0.15,
     };
     return Math.round(base * (multiplier[condition] ?? 0.75));
 }
-const MARKET_PRICES: Record<string, { Mint: number; Good: number; Poor: number; Broken: number }> = {
-    'iphone 15 pro max': { Mint: 950, Good: 750, Poor: 500, Broken: 250 },
-    'iphone 15 pro': { Mint: 850, Good: 680, Poor: 450, Broken: 220 },
-    'iphone 15': { Mint: 650, Good: 500, Poor: 320, Broken: 150 },
-    'iphone 14 pro max': { Mint: 800, Good: 620, Poor: 400, Broken: 180 },
-    'iphone 14 pro': { Mint: 700, Good: 540, Poor: 350, Broken: 160 },
-    'iphone 14': { Mint: 550, Good: 420, Poor: 270, Broken: 120 },
-    'iphone 13 pro max': { Mint: 650, Good: 500, Poor: 320, Broken: 140 },
-    'iphone 13': { Mint: 450, Good: 340, Poor: 220, Broken: 100 },
-    'samsung galaxy s24 ultra': { Mint: 900, Good: 720, Poor: 480, Broken: 220 },
-    'samsung galaxy s24': { Mint: 600, Good: 460, Poor: 300, Broken: 130 },
-    'samsung galaxy s23 ultra': { Mint: 700, Good: 550, Poor: 350, Broken: 160 },
-    'samsung galaxy s23': { Mint: 450, Good: 340, Poor: 220, Broken: 100 },
-    'macbook pro m3': { Mint: 1400, Good: 1100, Poor: 750, Broken: 350 },
-    'macbook air m2': { Mint: 800, Good: 620, Poor: 400, Broken: 185 },
-    'ipad pro': { Mint: 700, Good: 550, Poor: 350, Broken: 150 },
-    'ipad air': { Mint: 450, Good: 340, Poor: 220, Broken: 100 },
-    'google pixel 8 pro': { Mint: 650, Good: 500, Poor: 320, Broken: 140 },
-    'google pixel 8': { Mint: 450, Good: 340, Poor: 220, Broken: 100 },
+const MARKET_PRICES: Record<string, { Mint: number; Good: number; Poor: number; Complex: number }> = {
+    'iphone 15 pro max': { Mint: 950, Good: 750, Poor: 500, Complex: 250 },
+    'iphone 15 pro': { Mint: 850, Good: 680, Poor: 450, Complex: 220 },
+    'iphone 15': { Mint: 650, Good: 500, Poor: 320, Complex: 150 },
+    'iphone 14 pro max': { Mint: 800, Good: 620, Poor: 400, Complex: 180 },
+    'iphone 14 pro': { Mint: 700, Good: 540, Poor: 350, Complex: 160 },
+    'iphone 14': { Mint: 550, Good: 420, Poor: 270, Complex: 120 },
+    'iphone 13 pro max': { Mint: 650, Good: 500, Poor: 320, Complex: 140 },
+    'iphone 13': { Mint: 450, Good: 340, Poor: 220, Complex: 100 },
+    'samsung galaxy s24 ultra': { Mint: 900, Good: 720, Poor: 480, Complex: 220 },
+    'samsung galaxy s24': { Mint: 600, Good: 460, Poor: 300, Complex: 130 },
+    'samsung galaxy s23 ultra': { Mint: 700, Good: 550, Poor: 350, Complex: 160 },
+    'samsung galaxy s23': { Mint: 450, Good: 340, Poor: 220, Complex: 100 },
+    'macbook pro m3': { Mint: 1400, Good: 1100, Poor: 750, Complex: 350 },
+    'macbook air m2': { Mint: 800, Good: 620, Poor: 400, Complex: 185 },
+    'ipad pro': { Mint: 700, Good: 550, Poor: 350, Complex: 150 },
+    'ipad air': { Mint: 450, Good: 340, Poor: 220, Complex: 100 },
+    'google pixel 8 pro': { Mint: 650, Good: 500, Poor: 320, Complex: 140 },
+    'google pixel 8': { Mint: 450, Good: 340, Poor: 220, Complex: 100 },
 };
 
 function getMarketEstimate(deviceName: string, condition: string): number {
@@ -49,8 +49,8 @@ function getMarketEstimate(deviceName: string, condition: string): number {
         }
     }
 
-    const cond = (condition.charAt(0).toUpperCase() + condition.slice(1).toLowerCase()) as 'Mint' | 'Good' | 'Poor' | 'Broken';
-    const finalCond = ['Mint', 'Good', 'Poor', 'Broken'].includes(cond) ? cond : 'Good';
+    const cond = (condition.charAt(0).toUpperCase() + condition.slice(1).toLowerCase()) as 'Mint' | 'Good' | 'Poor' | 'Complex';
+    const finalCond = ['Mint', 'Good', 'Poor', 'Complex'].includes(cond) ? cond : 'Good';
 
     if (matchKey) {
         return MARKET_PRICES[matchKey][finalCond];
@@ -68,7 +68,7 @@ function getMarketEstimate(deviceName: string, condition: string): number {
         base = 500;
     }
 
-    const multipliers = { Mint: 1.0, Good: 0.75, Poor: 0.4, Broken: 0.15 };
+    const multipliers = { Mint: 1.0, Good: 0.75, Poor: 0.4, Complex: 0.15 };
     return Math.round(base * multipliers[finalCond]);
 }
 
@@ -77,7 +77,7 @@ async function smartFallbackEvaluate(deviceName: string, image: string, storage:
     const imageLower = image.toLowerCase();
     
     let isReal = true;
-    let condition: 'Mint' | 'Good' | 'Poor' | 'Broken' = 'Good';
+    let condition: 'Mint' | 'Good' | 'Poor' | 'Complex' = 'Good';
     let reasoning = 'Visual scan shows standard light reflections, solid screen integrity with minor surface wear.';
     let retryMessage = '';
 
@@ -101,8 +101,8 @@ async function smartFallbackEvaluate(deviceName: string, image: string, storage:
         if (imageLower.includes('mint') || lowerDevice.includes('mint')) {
             condition = 'Mint';
             reasoning = 'Excellent pristine condition detected. Zero visible scratches, scuffs, or display blemishes.';
-        } else if (imageLower.includes('broken') || imageLower.includes('crack') || lowerDevice.includes('broken') || imageLower.includes('shatter')) {
-            condition = 'Broken';
+        } else if (imageLower.includes('broken') || imageLower.includes('crack') || lowerDevice.includes('broken') || imageLower.includes('shatter') || imageLower.includes('complex') || lowerDevice.includes('complex')) {
+            condition = 'Complex';
             reasoning = 'Cracked glass or structural display damage visible on the screen/body.';
         } else if (imageLower.includes('poor') || lowerDevice.includes('poor') || imageLower.includes('heavy')) {
             condition = 'Poor';
@@ -171,7 +171,7 @@ Perform the following steps:
    - "Mint": looks brand new, no scratches, scuffs, or dents.
    - "Good": intact, screen is fine, but has light surface wear/micro-scratches.
    - "Poor": visible heavy wear, deep scratches, scuffs, but no structural cracks.
-   - "Broken": has a cracked screen, broken back glass, major dent, or non-functional areas.
+   - "Complex": has a cracked screen, broken back glass, major dent, or non-functional areas.
    Provide a 1-sentence reasoning explaining the condition based on visual visual evidence (e.g. reflections, screen state).
 3. Realistic Market Pricing:
    Suggest a realistic market price in GBP (£) based on the device model and condition.
@@ -179,7 +179,7 @@ Perform the following steps:
 You MUST respond strictly with a JSON object in this format:
 {
   "isReal": boolean,
-  "condition": "Mint" | "Good" | "Poor" | "Broken",
+  "condition": "Mint" | "Good" | "Poor" | "Complex",
   "reasoning": "brief 1-sentence explanation of what you see",
   "retryMessage": "polite, warm message if isReal is false, otherwise empty string",
   "suggestedPrice": number

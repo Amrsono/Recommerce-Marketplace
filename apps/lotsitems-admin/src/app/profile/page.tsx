@@ -23,7 +23,9 @@ import {
     MapPin,
     Package,
     Loader2,
-    Calendar
+    Calendar,
+    Trash2,
+    Star
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -55,6 +57,19 @@ export default function ProfilePage() {
     const [isAccepting, setIsAccepting] = useState(false);
     const [isRejecting, setIsRejecting] = useState(false);
     const [isApproving, setIsApproving] = useState(false);
+
+    // Payout modal state
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [payoutType, setPayoutType] = useState<'BIZUM' | 'CARD' | 'BANK_TRANSFER'>('BIZUM');
+    const [phoneNum, setPhoneNum] = useState('');
+    const [cardNumber, setCardNumber] = useState('');
+    const [cardExpiry, setCardExpiry] = useState('');
+    const [cardCvc, setCardCvc] = useState('');
+    const [cardName, setCardName] = useState('');
+    const [iban, setIban] = useState('');
+    const [bankName, setBankName] = useState('');
+    const [isSubmittingPayout, setIsSubmittingPayout] = useState(false);
+    const [payoutError, setPayoutError] = useState('');
 
     const fetchProfile = () => {
         if (user?.email) {
@@ -146,6 +161,99 @@ export default function ProfilePage() {
     const handleOpenChatForTicket = (ticketId: string) => {
         setSelectedTicketId(null);
         setActiveTab('chat');
+    };
+
+    const handleDeletePaymentMethod = async (id: string) => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/profile/${user?.email}/payment-methods/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (data.success) fetchProfile();
+        } catch (err) {
+            console.error('Failed to delete payment method:', err);
+        }
+    };
+
+    const handleSetDefaultPaymentMethod = async (id: string) => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/profile/${user?.email}/payment-methods/${id}/default`, {
+                method: 'PATCH'
+            });
+            const data = await res.json();
+            if (data.success) fetchProfile();
+        } catch (err) {
+            console.error('Failed to set default payment method:', err);
+        }
+    };
+
+    const handleAddPaymentMethod = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmittingPayout(true);
+        setPayoutError('');
+
+        let payload: any = { type: payoutType };
+
+        if (payoutType === 'BIZUM') {
+            if (!phoneNum || phoneNum.trim().length < 9) {
+                setPayoutError('Please enter a valid phone number');
+                setIsSubmittingPayout(false);
+                return;
+            }
+            // Simple check: Spain number often starts with +34, or is 9 digits
+            const digits = phoneNum.replace(/\D/g, '');
+            if (digits.length < 9) {
+                setPayoutError('Phone number must have at least 9 digits');
+                setIsSubmittingPayout(false);
+                return;
+            }
+            payload.provider = 'Bizum';
+            payload.last4 = digits.slice(-4);
+        } else if (payoutType === 'CARD') {
+            if (!cardNumber || !cardExpiry || !cardCvc || !cardName) {
+                setPayoutError('Please fill in all credit card fields');
+                setIsSubmittingPayout(false);
+                return;
+            }
+            payload.provider = 'Visa/Mastercard';
+            payload.last4 = cardNumber.replace(/\D/g, '').slice(-4);
+        } else if (payoutType === 'BANK_TRANSFER') {
+            if (!iban || !bankName) {
+                setPayoutError('Please fill in bank IBAN and bank name');
+                setIsSubmittingPayout(false);
+                return;
+            }
+            payload.provider = bankName;
+            payload.last4 = iban.replace(/\s/g, '').slice(-4);
+        }
+
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/profile/${user?.email}/payment-methods`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                fetchProfile();
+                setIsModalOpen(false);
+                // Clear fields
+                setPhoneNum('');
+                setCardNumber('');
+                setCardExpiry('');
+                setCardCvc('');
+                setCardName('');
+                setIban('');
+                setBankName('');
+            } else {
+                setPayoutError(data.error || 'Failed to add payment method');
+            }
+        } catch (err) {
+            console.error('Failed to add payment method:', err);
+            setPayoutError('Network error. Please try again.');
+        } finally {
+            setIsSubmittingPayout(false);
+        }
     };
 
     return (
@@ -346,24 +454,66 @@ export default function ProfilePage() {
                                 )}
 
                                 {activeTab === 'payments' && (
-                                    <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-3xl">
-                                        <h3 className="text-xl font-bold text-white mb-6">Payment Methods</h3>
+                                    <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-3xl relative">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h3 className="text-xl font-bold text-white">Payout Methods</h3>
+                                            <span className="text-slate-500 text-xs font-semibold">Bizum, Card, Bank Payouts</span>
+                                        </div>
                                         <div className="space-y-4">
-                                            {profileData?.paymentMethods?.map((pm: any) => (
-                                                <div key={pm.id} className="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-between">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-8 bg-slate-900 rounded overflow-hidden flex items-center justify-center border border-slate-800">
-                                                            <CreditCard className="w-5 h-5 text-slate-400" />
+                                            {profileData?.paymentMethods?.length === 0 ? (
+                                                <div className="text-center py-12 text-slate-500 bg-slate-950/40 rounded-2xl border border-slate-800 border-dashed">
+                                                    No payout methods configured yet. Add one below to receive funds.
+                                                </div>
+                                            ) : (
+                                                profileData?.paymentMethods?.map((pm: any) => (
+                                                    <div key={pm.id} className="p-4 bg-slate-950/85 border border-slate-800 rounded-2xl flex items-center justify-between hover:border-slate-700 transition-all group">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className={`w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center border border-slate-800 ${
+                                                                pm.type === 'BIZUM' ? 'bg-[#00C4B4]/10 border-[#00C4B4]/30' : 'bg-slate-900'
+                                                            }`}>
+                                                                {pm.type === 'BIZUM' ? (
+                                                                    <span className="text-[#00C4B4] font-black text-xl select-none" style={{ fontFamily: 'sans-serif' }}>b</span>
+                                                                ) : (
+                                                                    <CreditCard className="w-5 h-5 text-slate-400" />
+                                                                )}
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-white font-semibold flex items-center gap-2">
+                                                                    {pm.provider} {pm.last4 ? `**** ${pm.last4}` : ''}
+                                                                    {pm.isDefault && (
+                                                                        <span className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-bold rounded-md uppercase tracking-wider">Default</span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="text-slate-500 text-xs">
+                                                                    {pm.type === 'BIZUM' ? 'Instant Mobile Payout' : pm.type === 'CARD' ? 'Card Transfer' : 'Direct Bank Payout'}
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <div className="text-white font-medium">{pm.provider} **** {pm.last4}</div>
-                                                            <div className="text-slate-500 text-xs">Default Payout Method</div>
+                                                        <div className="flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                                                            {!pm.isDefault && (
+                                                                <button
+                                                                    onClick={() => handleSetDefaultPaymentMethod(pm.id)}
+                                                                    className="p-2 text-slate-400 hover:text-amber-400 transition-colors"
+                                                                    title="Set as Default"
+                                                                >
+                                                                    <Star className="w-4 h-4" />
+                                                                </button>
+                                                            )}
+                                                            <button
+                                                                onClick={() => handleDeletePaymentMethod(pm.id)}
+                                                                className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                                                                title="Remove Method"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
                                                         </div>
                                                     </div>
-                                                    <div className="px-2 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded">ACTIVE</div>
-                                                </div>
-                                            ))}
-                                            <button className="w-full py-4 border-2 border-dashed border-slate-800 rounded-2xl text-slate-500 hover:text-blue-400 hover:border-blue-500/50 transition-all font-medium flex items-center justify-center gap-2">
+                                                ))
+                                            )}
+                                            <button
+                                                onClick={() => setIsModalOpen(true)}
+                                                className="w-full py-4 border-2 border-dashed border-slate-800 rounded-2xl text-slate-500 hover:text-blue-400 hover:border-blue-500/50 transition-all font-medium flex items-center justify-center gap-2"
+                                            >
                                                 Add new payout method
                                             </button>
                                         </div>
@@ -405,8 +555,196 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                </div>
             </main>
+
+            {/* Add Payout Method Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 animate-in fade-in duration-200">
+                    <div 
+                        className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Header */}
+                        <div className="p-6 border-b border-slate-800/80 flex justify-between items-center bg-slate-950/20">
+                            <div>
+                                <h3 className="text-xl font-bold text-white">Add Payout Method</h3>
+                                <p className="text-slate-500 text-xs mt-1">Select your preferred method to receive payments</p>
+                            </div>
+                            <button 
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-slate-400 hover:text-white transition-colors p-1"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Tabs */}
+                        <div className="flex border-b border-slate-800/50 p-2 gap-2 bg-slate-950/40">
+                            {[
+                                { id: 'BIZUM', label: 'Bizum' },
+                                { id: 'CARD', label: 'Card' },
+                                { id: 'BANK_TRANSFER', label: 'Bank Transfer' }
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    type="button"
+                                    onClick={() => { setPayoutType(tab.id as any); setPayoutError(''); }}
+                                    className={`flex-1 py-3 px-2 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+                                        payoutType === tab.id
+                                            ? tab.id === 'BIZUM'
+                                                ? 'bg-[#00C4B4]/20 border border-[#00C4B4]/40 text-[#00C4B4] shadow-lg shadow-[#00C4B4]/5'
+                                                : 'bg-blue-600 border border-blue-500 text-white shadow-lg shadow-blue-500/10'
+                                            : 'text-slate-400 border border-transparent hover:text-white hover:bg-slate-800/50'
+                                    }`}
+                                >
+                                    {tab.id === 'BIZUM' && (
+                                        <span className="w-5 h-5 rounded-full bg-[#00C4B4] text-slate-950 flex items-center justify-center text-xs font-black select-none">b</span>
+                                    )}
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Form */}
+                        <form onSubmit={handleAddPaymentMethod} className="p-6 space-y-6">
+                            {payoutError && (
+                                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl font-medium">
+                                    {payoutError}
+                                </div>
+                            )}
+
+                            {payoutType === 'BIZUM' && (
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-[#00C4B4]/5 border border-[#00C4B4]/10 rounded-2xl flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-[#00C4B4]/20 flex items-center justify-center flex-shrink-0">
+                                            <span className="text-[#00C4B4] font-black text-2xl select-none">b</span>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-white font-bold text-sm">Bizum Payout</h4>
+                                            <p className="text-slate-400 text-xs mt-0.5">Instant payout directly to your bank account via Bizum.</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-slate-400 text-xs font-bold uppercase tracking-wider block">Phone Number (Spain / International)</label>
+                                        <div className="flex gap-2">
+                                            <div className="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-400 text-sm font-semibold flex items-center gap-2 select-none">
+                                                🇪🇸 <span className="text-white">+34</span>
+                                            </div>
+                                            <input 
+                                                type="tel"
+                                                placeholder="600 000 000"
+                                                value={phoneNum}
+                                                onChange={(e) => setPhoneNum(e.target.value)}
+                                                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                                                required
+                                            />
+                                        </div>
+                                        <p className="text-slate-500 text-[11px] leading-relaxed mt-1">Please make sure this phone number is linked to Bizum in your Spanish bank app.</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {payoutType === 'CARD' && (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-slate-400 text-xs font-bold uppercase tracking-wider block">Cardholder Name</label>
+                                        <input 
+                                            type="text"
+                                            placeholder="John Doe"
+                                            value={cardName}
+                                            onChange={(e) => setCardName(e.target.value)}
+                                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-slate-400 text-xs font-bold uppercase tracking-wider block">Card Number</label>
+                                        <input 
+                                            type="text"
+                                            placeholder="4000 1234 5678 9010"
+                                            value={cardNumber}
+                                            onChange={(e) => setCardNumber(e.target.value)}
+                                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-slate-400 text-xs font-bold uppercase tracking-wider block">Expiry Date</label>
+                                            <input 
+                                                type="text"
+                                                placeholder="MM/YY"
+                                                value={cardExpiry}
+                                                onChange={(e) => setCardExpiry(e.target.value)}
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-slate-400 text-xs font-bold uppercase tracking-wider block">CVC</label>
+                                            <input 
+                                                type="text"
+                                                placeholder="123"
+                                                value={cardCvc}
+                                                onChange={(e) => setCardCvc(e.target.value)}
+                                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {payoutType === 'BANK_TRANSFER' && (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-slate-400 text-xs font-bold uppercase tracking-wider block">Bank Name</label>
+                                        <input 
+                                            type="text"
+                                            placeholder="e.g. Santander, BBVA"
+                                            value={bankName}
+                                            onChange={(e) => setBankName(e.target.value)}
+                                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-slate-400 text-xs font-bold uppercase tracking-wider block">IBAN</label>
+                                        <input 
+                                            type="text"
+                                            placeholder="ES21 0000 0000 0000 0000 0000"
+                                            value={iban}
+                                            onChange={(e) => setIban(e.target.value)}
+                                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Buttons */}
+                            <div className="flex gap-3 pt-4 border-t border-slate-800/50">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl py-3 text-sm font-semibold transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmittingPayout}
+                                    className={`flex-1 rounded-xl py-3 text-sm font-bold text-white transition-all flex items-center justify-center gap-2 ${
+                                        payoutType === 'BIZUM'
+                                            ? 'bg-[#00C4B4] hover:bg-[#00B4A4] text-slate-950 font-black shadow-lg shadow-[#00C4B4]/20 disabled:opacity-50'
+                                            : 'bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20 disabled:opacity-50'
+                                    }`}
+                                >
+                                    {isSubmittingPayout ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        'Add Method'
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

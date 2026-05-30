@@ -365,8 +365,8 @@ ensureAdmin();
 // Export for Vercel
 export default app;
 
-// Only listen if not running in production (Vercel handles the listener in prod)
-if (process.env.NODE_ENV !== 'production') {
+// Only listen if not running on Vercel (Vercel handles the listener as a serverless function)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     app.listen(port, async () => {
         await ensureAdmin();
         console.log(`Lotsitems API is running on port ${port}`);
