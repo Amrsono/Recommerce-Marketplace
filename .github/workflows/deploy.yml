@@ -1,0 +1,47 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: SSH & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            set -e
+            cd /var/www/recommerce-marketplace
+
+            echo ">>> Pulling latest changes..."
+            git pull origin main
+
+            echo ">>> Writing production .env..."
+            echo "NEXT_PUBLIC_API_URL=http://lotsitems.com/api" > apps/lotsitems-admin/.env
+
+            echo ">>> Installing dependencies..."
+            npm install
+
+            echo ">>> Generating Prisma Client..."
+            npm run generate --workspace=database
+
+            echo ">>> Running DB migrations..."
+            npx prisma db push --schema=packages/database/prisma/schema.prisma --accept-data-loss
+
+            echo ">>> Building apps..."
+            npm run build
+
+            echo ">>> Reloading PM2..."
+            pm2 reload scripts/pm2.config.js --env production
+
+            pm2 save
+            echo ">>> Deployment complete!"
