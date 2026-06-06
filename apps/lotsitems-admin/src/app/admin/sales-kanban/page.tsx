@@ -251,7 +251,7 @@ export default function SalesKanbanCenter() {
     };
 
     // Render order card (Payment, Shipping stages)
-    const renderOrderCard = (order: Order, options: { nextStatus?: Order['status']; label: string; colorClass: string; icon: any }) => {
+    const renderOrderCard = (order: Order, options: { nextStatus?: Order['status']; label?: string; colorClass?: string; icon?: any }) => {
         return (
             <div
                 key={order.id}
