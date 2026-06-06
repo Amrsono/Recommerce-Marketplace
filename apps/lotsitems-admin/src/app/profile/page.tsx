@@ -54,7 +54,7 @@ export default function ProfilePage() {
     const { t } = useLanguage();
     const router = useRouter();
     const [profileData, setProfileData] = useState<any>(null);
-    const [activeTab, setActiveTab] = useState<'orders' | 'chat' | 'payments'>('orders');
+    const [activeTab, setActiveTab] = useState<'orders' | 'chat' | 'payments' | 'bids'>('orders');
     const [isLoading, setIsLoading] = useState(true);
     const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
     const [isAccepting, setIsAccepting] = useState(false);
@@ -322,6 +322,7 @@ export default function ProfilePage() {
                         <div className="space-y-1">
                             {[
                                 { id: 'orders', label: t('profileMyOrders') || 'My Orders', icon: History },
+                                { id: 'bids', label: 'Bidded Buys', icon: TrendingUp },
                                 { id: 'chat', label: t('profileSupportChat') || 'Support Chat', icon: MessageSquare },
                                 { id: 'payments', label: t('profilePayoutMethods') || 'Payout Methods', icon: CreditCard },
                                 { id: 'settings', label: t('profileSettings') || 'Settings', icon: Settings },
@@ -465,9 +466,92 @@ export default function ProfilePage() {
                                     />
                                 )}
 
+                                 {activeTab === 'bids' && (
+                                    <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-3xl relative">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h3 className="text-xl font-bold text-white">Bidded Buys</h3>
+                                            <span className="text-slate-500 text-xs font-semibold">Track your active and historical bids</span>
+                                        </div>
+                                        <div className="space-y-4">
+                                            {!profileData?.customerBids || profileData.customerBids.length === 0 ? (
+                                                <div className="text-center py-12 text-slate-500 bg-slate-950/40 rounded-2xl border border-slate-800 border-dashed">
+                                                    You haven't placed any bids on marketplace devices yet.
+                                                    <div className="mt-4">
+                                                        <Link href="/marketplace" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl text-xs font-bold transition-all shadow-md">
+                                                            Browse Marketplace
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                profileData.customerBids.map((bid: any) => {
+                                                    const isHighest = bid.amount >= (bid.listing?.currentBid || 0);
+                                                    const isWon = bid.status === 'WON';
+                                                    const isRejected = bid.status === 'REJECTED';
+                                                    
+                                                    let badgeColor = 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+                                                    let badgeText = 'Pending';
+                                                    
+                                                    if (isWon) {
+                                                        badgeColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 border';
+                                                        badgeText = 'Won';
+                                                    } else if (isRejected) {
+                                                        badgeColor = 'bg-red-500/20 text-red-400 border-red-500/30 border';
+                                                        badgeText = 'Outbid / Lost';
+                                                    } else if (isHighest) {
+                                                        badgeColor = 'bg-green-500/20 text-green-400 border-green-500/30 border animate-pulse';
+                                                        badgeText = 'Highest Bidder';
+                                                    } else {
+                                                        badgeColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30 border';
+                                                        badgeText = 'Outbid';
+                                                    }
+
+                                                    return (
+                                                        <div key={bid.id} className="p-4 bg-slate-950/85 border border-slate-800 rounded-2xl flex flex-col md:flex-row md:items-center justify-between hover:border-slate-700 transition-all gap-4">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="w-12 h-12 rounded-xl bg-slate-900 overflow-hidden flex items-center justify-center border border-slate-800 shrink-0">
+                                                                    {bid.listing?.images?.[0] ? (
+                                                                        <img src={bid.listing.images[0]} alt={bid.listing.model} className="w-full h-full object-cover" />
+                                                                    ) : (
+                                                                        <Smartphone className="w-5 h-5 text-slate-400" />
+                                                                    )}
+                                                                </div>
+                                                                <div>
+                                                                    <div className="text-white font-semibold">
+                                                                        {bid.listing?.make} {bid.listing?.model}
+                                                                    </div>
+                                                                    <div className="text-slate-500 text-xs">
+                                                                        Storage: {bid.listing?.storage} • Seller: {bid.listing?.seller?.name || 'Verified Seller'}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 border-slate-800/50 pt-3 md:pt-0">
+                                                                <div className="text-left md:text-right">
+                                                                    <div className="text-[10px] text-slate-500 uppercase font-semibold">Your Bid / Current</div>
+                                                                    <div className="text-white font-bold text-sm">
+                                                                        <span className="text-emerald-400">${bid.amount}</span> / <span className="text-slate-400">${bid.listing?.currentBid || bid.listing?.basePrice}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={`px-2.5 py-1 border text-[10px] font-bold uppercase tracking-wider rounded-md ${badgeColor}`}>
+                                                                        {badgeText}
+                                                                    </span>
+                                                                    <Link href="/marketplace" className="p-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors">
+                                                                        <ExternalLink className="w-3.5 h-3.5" />
+                                                                    </Link>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {activeTab === 'chat' && (
                                     <ChatInterface ticketId={activeOrder?.id} receiverId={activeOrder?.engineerId || "1"} />
                                 )}
+
 
                                 {activeTab === 'payments' && (
                                     <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-3xl relative">

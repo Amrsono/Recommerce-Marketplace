@@ -24,7 +24,15 @@ router.get('/:identifier', async (req: Request, res: Response) => {
                     orderBy: { createdAt: 'desc' },
                     take: 5
                 },
-                paymentMethods: true
+                paymentMethods: true,
+                customerBids: {
+                    include: {
+                        listing: {
+                            include: { seller: true }
+                        }
+                    },
+                    orderBy: { createdAt: 'desc' }
+                }
             }
         });
 

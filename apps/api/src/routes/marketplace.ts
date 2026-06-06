@@ -265,5 +265,67 @@ router.post('/seed', async (req, res) => {
     }
 });
 
+// GET /api/marketplace/admin/listings
+router.get('/admin/listings', async (req, res) => {
+    try {
+        const listings = await prisma.marketListing.findMany({
+            include: { 
+                seller: true,
+                bids: {
+                    include: { buyer: true },
+                    orderBy: { amount: 'desc' }
+                }
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        res.json({ success: true, listings });
+    } catch (error) {
+        console.error('Error fetching admin listings:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch listings' });
+    }
+});
+
+// GET /api/marketplace/admin/orders
+router.get('/admin/orders', async (req, res) => {
+    try {
+        const orders = await prisma.order.findMany({
+            include: { 
+                listing: {
+                    include: { seller: true }
+                },
+                buyer: true
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json({ success: true, orders });
+    } catch (error) {
+        console.error('Error fetching admin orders:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch orders' });
+    }
+});
+
+// PATCH /api/marketplace/admin/orders/:id/status
+router.patch('/admin/orders/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({ success: false, error: 'status is required' });
+        }
+
+        const order = await prisma.order.update({
+            where: { id },
+            data: { status },
+            include: { listing: true, buyer: true }
+        });
+
+        res.json({ success: true, order });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({ success: false, error: 'Failed to update order status' });
+    }
+});
+
 export default router;
 

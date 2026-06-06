@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, KanbanSquare, LogOut, Home, MessageSquare, Settings } from 'lucide-react';
+import { LayoutDashboard, KanbanSquare, LogOut, Home, MessageSquare, Settings, Gavel } from 'lucide-react';
 import AdminGuard from '@/components/AdminGuard';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
@@ -20,6 +20,7 @@ export default function AdminLayout({ children }: Readonly<{ children: React.Rea
         { href: '/', label: t('adminNavMainPage'), icon: Home, exact: false },
         { href: '/admin', label: t('adminNavDashboard'), icon: LayoutDashboard, exact: true },
         { href: '/admin/kanban', label: t('adminNavTicketCommand'), icon: KanbanSquare, exact: true },
+        { href: '/admin/sales-kanban', label: 'Sales Command', icon: Gavel, exact: true },
         { href: '/admin/chat', label: t('adminNavSupportChat'), icon: MessageSquare, exact: true },
         { href: '/admin/settings', label: t('adminNavSettings'), icon: Settings, exact: true },
     ];
