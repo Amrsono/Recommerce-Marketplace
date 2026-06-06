@@ -71,6 +71,7 @@ type OfferData = {
     condition: string;
     askedPrice: string;
     photos: { front: string | null; back: string | null; box: string | null };
+    noBox: boolean;
     evaluationMethod: EvaluationMethod;
     selectedStoreId: string;
     address: string;
@@ -92,6 +93,7 @@ export default function OfferJourney() {
         condition: "",
         askedPrice: "",
         photos: { front: null, back: null, box: null },
+        noBox: false,
         evaluationMethod: "",
         selectedStoreId: "",
         address: "",
@@ -229,7 +231,7 @@ export default function OfferJourney() {
         }
     };
 
-    const photosUploadedCount = [data.photos.front, data.photos.back, data.photos.box].filter(Boolean).length;
+    const photosUploadedCount = [data.photos.front, data.photos.back, (data.photos.box || data.noBox)].filter(Boolean).length;
 
     return (
         <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-4 md:p-8 relative overflow-hidden">
@@ -428,13 +430,42 @@ export default function OfferJourney() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {[{ id: "front", label: "Front Screen" }, { id: "back", label: "Back Panel" }, { id: "box", label: "Original Box" }].map(photoType => (
                                 <div key={photoType.id} className="relative">
-                                    <label className="text-sm font-medium text-slate-300 mb-2 block">{photoType.label}</label>
-                                    <label className="flex flex-col items-center justify-center h-32 w-full bg-slate-950 border-2 border-dashed border-slate-700/60 rounded-xl hover:border-blue-500 hover:bg-blue-500/5 transition-all cursor-pointer group overflow-hidden relative">
-                                        <input type="file" accept="image/*" className="hidden" onChange={e => {
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-sm font-medium text-slate-300">{photoType.label}</label>
+                                        {photoType.id === "box" && (
+                                            <label className="flex items-center gap-1.5 cursor-pointer group">
+                                                <div className="relative">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="peer sr-only"
+                                                        checked={data.noBox}
+                                                        onChange={e => updateData({ noBox: e.target.checked, photos: { ...data.photos, box: null } })}
+                                                    />
+                                                    <div className="w-4 h-4 border-2 border-slate-600 rounded bg-slate-950 peer-checked:bg-amber-500 peer-checked:border-amber-500 transition-colors flex items-center justify-center">
+                                                        <CheckCircle2 className="w-2.5 h-2.5 text-slate-900 opacity-0 peer-checked:opacity-100 transition-opacity" />
+                                                    </div>
+                                                </div>
+                                                <span className="text-[11px] text-slate-400 group-hover:text-amber-400 transition-colors font-medium">No box</span>
+                                            </label>
+                                        )}
+                                    </div>
+                                    <label className={`flex flex-col items-center justify-center h-32 w-full bg-slate-950 border-2 border-dashed rounded-xl transition-all overflow-hidden relative ${
+                                        photoType.id === "box" && data.noBox
+                                            ? "border-amber-500/30 bg-amber-500/5 cursor-not-allowed opacity-50 pointer-events-none"
+                                            : "border-slate-700/60 hover:border-blue-500 hover:bg-blue-500/5 cursor-pointer group"
+                                    }`}>
+                                        <input type="file" accept="image/*" className="hidden" disabled={photoType.id === "box" && data.noBox} onChange={e => {
                                             const file = e.target.files?.[0];
                                             if (file) updateData({ photos: { ...data.photos, [photoType.id]: URL.createObjectURL(file) } });
                                         }} />
-                                        {data.photos[photoType.id as keyof typeof data.photos] ? (
+                                        {photoType.id === "box" && data.noBox ? (
+                                            <div className="flex flex-col items-center gap-2">
+                                                <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                                                    <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                                                </div>
+                                                <span className="text-xs text-amber-400 font-semibold">Skipped — No Box</span>
+                                            </div>
+                                        ) : data.photos[photoType.id as keyof typeof data.photos] ? (
                                             // eslint-disable-next-line @next/next/no-img-element
                                             <img src={data.photos[photoType.id as keyof typeof data.photos]!} alt={photoType.label} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-50 transition-opacity" />
                                         ) : (
