@@ -354,6 +354,20 @@ async function ensureAdmin() {
         } else {
             console.log('[Startup] Database has existing data, skipping sample seed.');
         }
+
+        // Refresh expired SLA deadlines for all active (non-resolved) tickets
+        const refreshed = await prisma.ticket.updateMany({
+            where: {
+                status: { notIn: ['RESOLVED', 'REJECTED'] },
+                slaDeadline: { lt: new Date() },
+            },
+            data: {
+                slaDeadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
+            },
+        });
+        if (refreshed.count > 0) {
+            console.log(`[Startup] Refreshed SLA deadline for ${refreshed.count} expired active ticket(s).`);
+        }
     } catch (error: any) {
         console.error('[Startup] Failed to ensure database state:', error.message);
     }
