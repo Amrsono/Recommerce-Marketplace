@@ -21,6 +21,9 @@ model User {
   notifications   Notification[]
   bids            Bid[]           @relation("VendorBids")
   wonTickets      Ticket[]        @relation("WinningVendor")
+  listings        MarketListing[] @relation("SellerListings")
+  customerBids    CustomerBid[]   @relation("CustomerBids")
+  orders          Order[]         @relation("BuyerOrders")
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 }
@@ -140,3 +143,56 @@ model Bid {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model DeviceCatalog {
+  id          String   @id @default(uuid())
+  make        String
+  model       String
+  storage     String
+  @@unique([make, model, storage])
+}
+
+model MarketListing {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  basePrice   Float
+  currentBid  Float?
+  condition   String
+  make        String
+  model       String
+  storage     String
+  images      Json?
+  sellerId    String
+  seller      User     @relation("SellerListings", fields: [sellerId], references: [id])
+  status      String   @default("AVAILABLE") // AVAILABLE, SOLD, CANCELLED
+  bids        CustomerBid[]
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CustomerBid {
+  id          String   @id @default(uuid())
+  amount      Float
+  listingId   String
+  listing     MarketListing @relation(fields: [listingId], references: [id])
+  buyerId     String
+  buyer       User          @relation("CustomerBids", fields: [buyerId], references: [id])
+  status      String        @default("PENDING") // PENDING, WINNING, REJECTED, WON
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Order {
+  id           String   @id @default(uuid())
+  listingId    String
+  listing      MarketListing @relation(fields: [listingId], references: [id])
+  buyerId      String
+  buyer        User     @relation("BuyerOrders", fields: [buyerId], references: [id])
+  status       String   @default("PENDING") // PENDING, PAID, SHIPPED, DELIVERED
+  totalAmount  Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+

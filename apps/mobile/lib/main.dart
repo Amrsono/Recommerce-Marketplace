@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'features/product_submission/presentation/product_submission_wizard.dart';
+import 'features/home/presentation/main_selection_screen.dart';
 import 'core/theme/theme.dart';
 import 'core/localization/translations.dart';
 
@@ -57,7 +57,7 @@ class LotsitemsApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const ProductSubmissionWizard(),
+      home: const MainSelectionScreen(),
     );
   }
 }

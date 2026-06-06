@@ -11,6 +11,8 @@ import profileRouter from './routes/profile';
 import chatRouter from './routes/chat';
 import settingsRouter from './routes/settings';
 import bidsRouter from './routes/bids';
+import catalogRouter from './routes/catalog';
+import marketplaceRouter from './routes/marketplace';
 import bcrypt from 'bcryptjs';
 
 const app = express();
@@ -30,6 +32,8 @@ app.use('/api/profile', profileRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/bids', bidsRouter);
+app.use('/api/catalog', catalogRouter);
+app.use('/api/marketplace', marketplaceRouter);
 
 app.get('/api/tickets', async (req, res) => {
     try {
