@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db';
+import { refreshDeviceCatalog } from '../services/catalogService';
 
 const router = Router();
 
@@ -87,4 +88,16 @@ router.post('/seed', async (req, res) => {
     }
 });
 
+// POST /api/catalog/refresh
+router.post('/refresh', async (req, res) => {
+    try {
+        const result = await refreshDeviceCatalog();
+        res.json({ success: true, message: 'Device catalog refreshed successfully', ...result });
+    } catch (error: any) {
+        console.error('Error refreshing device catalog via API:', error);
+        res.status(500).json({ success: false, error: 'Failed to refresh device catalog', details: error.message });
+    }
+});
+
 export default router;
+

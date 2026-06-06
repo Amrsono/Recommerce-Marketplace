@@ -21,6 +21,47 @@ const STORES = [
     { id: "store-4", name: "Lotsitems — West End",    address: "201 Oxford Street, London, W1D 2LJ",  distance: "2.3 mi", hours: "Mon–Sat 9am–8pm" },
 ];
 
+const FALLBACK_MODELS: Record<string, string[]> = {
+    Apple: [
+        'iPhone 15 Pro Max','iPhone 15 Pro','iPhone 15 Plus','iPhone 15',
+        'iPhone 14 Pro Max','iPhone 14 Pro','iPhone 14 Plus','iPhone 14',
+        'iPhone 13 Pro Max','iPhone 13 Pro','iPhone 13','iPhone 13 Mini',
+        'iPhone 12 Pro Max','iPhone 12 Pro','iPhone 12','iPhone 12 Mini',
+        'MacBook Pro 16" M3','MacBook Pro 14" M3','MacBook Pro M2','MacBook Air M2','MacBook Air M1',
+        'iPad Pro 12.9" (6th Gen)','iPad Pro 11" (4th Gen)','iPad Air 5th Gen','iPad (10th Gen)','iPad Mini 6th Gen',
+    ],
+    Samsung: [
+        'Galaxy S24 Ultra','Galaxy S24+','Galaxy S24',
+        'Galaxy S23 Ultra','Galaxy S23+','Galaxy S23',
+        'Galaxy S22 Ultra','Galaxy S22+','Galaxy S22',
+        'Galaxy Z Fold 5','Galaxy Z Fold 4','Galaxy Z Flip 5','Galaxy Z Flip 4',
+        'Galaxy Tab S9 Ultra','Galaxy Tab S9+','Galaxy Tab S9',
+    ],
+    Google: [
+        'Pixel 8 Pro','Pixel 8','Pixel 8a',
+        'Pixel 7 Pro','Pixel 7','Pixel 7a',
+        'Pixel 6 Pro','Pixel 6','Pixel 6a',
+    ],
+    Sony: [
+        'Xperia 1 VI','Xperia 1 V','Xperia 5 V','Xperia 10 V',
+        'Xperia 1 IV','Xperia 5 IV',
+    ],
+    OnePlus: [
+        'OnePlus 12','OnePlus 12R','OnePlus 11',
+        'OnePlus Nord 4','OnePlus Nord 3','OnePlus 10 Pro',
+    ],
+    Xiaomi: [
+        'Xiaomi 14 Ultra','Xiaomi 14 Pro','Xiaomi 14',
+        'Xiaomi 13 Pro','Xiaomi 13',
+        'Redmi Note 13 Pro+','Redmi Note 13 Pro',
+    ],
+    Huawei: [
+        'Pura 70 Pro+','Pura 70 Pro','P60 Pro','Mate 60 Pro','MatePad Pro 13.2"',
+    ],
+    Other: ['Other Model'],
+};
+
+
 type EvaluationMethod = "home-visit" | "store" | "";
 
 type OfferData = {
@@ -272,26 +313,26 @@ export default function OfferJourney() {
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-slate-300 mb-1.5 block">Model</label>
-                                {models.length > 0 ? (
+                                <div className="relative">
                                     <select
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all appearance-none disabled:opacity-50"
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all appearance-none disabled:opacity-40 disabled:cursor-not-allowed"
                                         value={data.model}
                                         disabled={!data.make || catalogLoading}
                                         onChange={e => updateData({ model: e.target.value, storage: '' })}
                                     >
-                                        <option value="" disabled>{catalogLoading ? 'Loading...' : 'Select Model...'}</option>
-                                        {models.map(m => <option key={m} value={m}>{m}</option>)}
+                                        <option value="" disabled>
+                                            {!data.make ? 'Select a make first' : catalogLoading ? 'Loading models...' : 'Select Model...'}
+                                        </option>
+                                        {(models.length > 0 ? models : FALLBACK_MODELS[data.make] || []).map(m => (
+                                            <option key={m} value={m}>{m}</option>
+                                        ))}
                                     </select>
-                                ) : (
-                                    <input
-                                        type="text"
-                                        placeholder={data.make ? 'Type model name...' : 'Select a make first'}
-                                        disabled={!data.make}
-                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all disabled:opacity-50"
-                                        value={data.model}
-                                        onChange={e => updateData({ model: e.target.value, storage: '' })}
-                                    />
-                                )}
+                                    {catalogLoading && (
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-slate-300 mb-1.5 block">Storage / Memory</label>

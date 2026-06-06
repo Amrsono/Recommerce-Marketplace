@@ -14,6 +14,19 @@ import bidsRouter from './routes/bids';
 import catalogRouter from './routes/catalog';
 import marketplaceRouter from './routes/marketplace';
 import bcrypt from 'bcryptjs';
+import cron from 'node-cron';
+import { refreshDeviceCatalog } from './services/catalogService';
+
+// Schedule weekly device catalog refresh on Sunday at midnight (0 0 * * 0)
+cron.schedule('0 0 * * 0', async () => {
+    try {
+        console.log('[Cron] Running scheduled weekly device catalog refresh...');
+        const result = await refreshDeviceCatalog();
+        console.log(`[Cron] Device catalog refreshed successfully. Added: ${result.added}, Total: ${result.total}`);
+    } catch (error) {
+        console.error('[Cron] Failed to run weekly device catalog refresh:', error);
+    }
+});
 
 const app = express();
 const port = process.env.PORT || 4000;
