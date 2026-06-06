@@ -60,6 +60,7 @@ export default function ProfilePage() {
     const [isAccepting, setIsAccepting] = useState(false);
     const [isRejecting, setIsRejecting] = useState(false);
     const [isApproving, setIsApproving] = useState(false);
+    const [activeListings, setActiveListings] = useState<any[]>([]);
 
     // Payout modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,6 +99,17 @@ export default function ProfilePage() {
     useEffect(() => {
         fetchProfile();
     }, [user]);
+
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/marketplace/listings`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.listings) {
+                    setActiveListings(data.listings.slice(0, 3));
+                }
+            })
+            .catch(err => console.error("Failed to fetch listings:", err));
+    }, []);
 
     if (!user) return <div className="p-8 text-white">Please sign in...</div>;
     if (user.role === 'VENDOR' || user.role === 'ADMIN') return null;
@@ -530,33 +542,42 @@ export default function ProfilePage() {
                     {/* Right Rails (Adverts/Stats) */}
                     <div className="lg:col-span-3 space-y-8">
                         <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl shadow-xl shadow-blue-600/20">
-                            <h3 className="text-white font-bold mb-2">Upgrade coming soon?</h3>
-                            <p className="text-blue-100 text-sm mb-6">Users who sell their iPhone 13 today are getting 15% more value than last month.</p>
-                            <button className="w-full bg-white text-blue-600 py-3 rounded-xl font-bold text-sm hover:scale-105 transition-transform flex items-center justify-center gap-2">
-                                Check Trending <TrendingUp className="w-4 h-4" />
-                            </button>
+                            <h3 className="text-white font-bold mb-2">Looking for an Upgrade?</h3>
+                            <p className="text-blue-100 text-sm mb-6">Explore our marketplace for certified used devices sold by other customers.</p>
+                            <Link href="/marketplace" className="w-full bg-white text-blue-600 py-3 rounded-xl font-bold text-sm hover:scale-105 transition-transform flex items-center justify-center gap-2">
+                                Browse Marketplace <TrendingUp className="w-4 h-4" />
+                            </Link>
                         </div>
 
-                        <div className="space-y-4">
-                             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Recommended for you</h4>
-                             {[
-                                { name: "MacBook Pro M2", price: "850", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=200&h=200&auto=format&fit=crop" },
-                                { name: "iPad Air 5th Gen", price: "420", img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=200&h=200&auto=format&fit=crop" }
-                             ].map((ad, i) => (
-                                 <div key={i} className="group bg-slate-900/30 border border-slate-800/50 rounded-2xl overflow-hidden hover:border-slate-700 transition-colors">
-                                     <div className="h-32 bg-slate-800 relative">
-                                         <img src={ad.img} alt={ad.name} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
-                                     </div>
-                                     <div className="p-4">
-                                         <h5 className="text-white text-sm font-bold mb-1">{ad.name}</h5>
-                                         <div className="flex justify-between items-center">
-                                             <span className="text-blue-400 font-bold text-xs">Sell for up to ${ad.price}</span>
-                                             <ExternalLink className="w-3 h-3 text-slate-600" />
-                                         </div>
-                                     </div>
-                                 </div>
-                             ))}
-                        </div>
+                        {activeListings.length > 0 && (
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Top Used Deals</h4>
+                                {activeListings.map((listing) => (
+                                    <div key={listing.id} className="group bg-slate-900/30 border border-slate-800/50 rounded-2xl overflow-hidden hover:border-slate-700 transition-colors">
+                                        <div className="h-32 bg-slate-800 relative">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={listing.images?.[0] || "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=200&h=200&auto=format&fit=crop"} alt={listing.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                                            <div className="absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase">
+                                                {listing.condition}
+                                            </div>
+                                        </div>
+                                        <div className="p-4">
+                                            <h5 className="text-white text-sm font-bold mb-1 line-clamp-1">{listing.make} {listing.model}</h5>
+                                            <p className="text-xs text-slate-400 mb-2 line-clamp-1">{listing.storage} • {listing.seller?.name || "Verified Seller"}</p>
+                                            <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-800/50">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] text-slate-500 uppercase font-semibold">Current Bid</span>
+                                                    <span className="text-emerald-400 font-bold text-sm">${listing.currentBid || listing.basePrice}</span>
+                                                </div>
+                                                <Link href={`/marketplace`} className="bg-slate-800 hover:bg-slate-700 text-white p-2 rounded-lg transition-colors">
+                                                    <ExternalLink className="w-4 h-4" />
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </main>

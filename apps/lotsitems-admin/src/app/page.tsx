@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Sparkles, ScanLine, Smartphone, ArrowRight, ShieldCheck, Zap, LogOut, X, Box, BadgeCheck, Globe, ChevronDown } from 'lucide-react';
+import { Sparkles, ScanLine, Smartphone, ArrowRight, ShieldCheck, Zap, LogOut, X, Box, BadgeCheck, Globe, ChevronDown, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
@@ -77,6 +77,7 @@ export default function LandingPage() {
 
           {/* Page Links */}
           <div className="hidden md:flex items-center gap-5 text-sm font-medium text-slate-400">
+            <Link href="/marketplace" className="hover:text-white transition-colors flex items-center gap-1.5"><ShoppingBag className="w-3.5 h-3.5" />Marketplace</Link>
             <Link href="/about" className="hover:text-white transition-colors">{t('navAbout')}</Link>
             <Link href="/contact" className="hover:text-white transition-colors">{t('navContact')}</Link>
           </div>
@@ -128,6 +129,14 @@ export default function LandingPage() {
           >
             <span>{t('btnGetOffer')}</span>
             <ArrowRight className={`w-5 h-5 transition-transform duration-300 ${isHovering ? (locale === 'ar' ? '-translate-x-1' : 'translate-x-1') : ''} ${locale === 'ar' ? 'rotate-180' : ''}`} />
+          </Link>
+
+          <Link
+            href="/marketplace"
+            className="group relative px-8 py-4 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 rounded-full font-semibold text-lg transition-all flex items-center justify-center gap-2 backdrop-blur-sm"
+          >
+            <ShoppingBag className="w-5 h-5" />
+            <span>Buy a Used Device</span>
           </Link>
 
           <button

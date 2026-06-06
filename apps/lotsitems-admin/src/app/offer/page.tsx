@@ -60,9 +60,46 @@ export default function OfferJourney() {
     const [handoffSessionId, setHandoffSessionId] = useState<string | null>(null);
     const [showQR, setShowQR] = useState(false);
 
+    // Dynamic catalog state
+    const [makes, setMakes] = useState<string[]>([]);
+    const [models, setModels] = useState<string[]>([]);
+    const [storageOptions, setStorageOptions] = useState<string[]>([]);
+    const [catalogLoading, setCatalogLoading] = useState(false);
+
     if (step === 3 && !handoffSessionId) {
         setHandoffSessionId(`sid_${Date.now()}_${Math.random().toString(36).substring(7)}`);
     }
+
+    // Fetch makes on mount
+    useEffect(() => {
+        const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+        fetch(`${API}/catalog/makes`)
+            .then(r => r.json())
+            .then(d => { if (d.success) setMakes(d.makes); })
+            .catch(console.error);
+    }, []);
+
+    // Fetch models when make changes
+    useEffect(() => {
+        if (!data.make) { setModels([]); setStorageOptions([]); return; }
+        const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+        setCatalogLoading(true);
+        fetch(`${API}/catalog/models?make=${encodeURIComponent(data.make)}`)
+            .then(r => r.json())
+            .then(d => { if (d.success) setModels(d.models); })
+            .catch(console.error)
+            .finally(() => setCatalogLoading(false));
+    }, [data.make]);
+
+    // Fetch storage when model changes
+    useEffect(() => {
+        if (!data.make || !data.model) { setStorageOptions([]); return; }
+        const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+        fetch(`${API}/catalog/storage?make=${encodeURIComponent(data.make)}&model=${encodeURIComponent(data.model)}`)
+            .then(r => r.json())
+            .then(d => { if (d.success) setStorageOptions(d.storageOptions); })
+            .catch(console.error);
+    }, [data.make, data.model]);
 
     useEffect(() => {
         if (step !== 3 || !handoffSessionId || !showQR) return;
@@ -217,29 +254,69 @@ export default function OfferJourney() {
                         <div className="space-y-4">
                             <div>
                                 <label className="text-sm font-medium text-slate-300 mb-1.5 block">Make (Brand)</label>
-                                <select className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all appearance-none" value={data.make} onChange={e => updateData({ make: e.target.value })}>
+                                <select
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all appearance-none"
+                                    value={data.make}
+                                    onChange={e => updateData({ make: e.target.value, model: '', storage: '' })}
+                                >
                                     <option value="" disabled>Select Make...</option>
-                                    <option value="Apple">Apple</option>
-                                    <option value="Samsung">Samsung</option>
-                                    <option value="Google">Google</option>
-                                    <option value="Sony">Sony</option>
-                                    <option value="Other">Other</option>
+                                    {makes.length > 0 ? (
+                                        makes.map(m => <option key={m} value={m}>{m}</option>)
+                                    ) : (
+                                        // Fallback options while loading or if DB empty
+                                        ['Apple', 'Samsung', 'Google', 'Sony', 'OnePlus', 'Xiaomi', 'Huawei', 'Other'].map(m => (
+                                            <option key={m} value={m}>{m}</option>
+                                        ))
+                                    )}
                                 </select>
                             </div>
                             <div>
-                                <label className="text-sm font-medium text-slate-300 mb-1.5 block">Exact Model</label>
-                                <input type="text" placeholder="e.g. iPhone 15 Pro Max" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all" value={data.model} onChange={e => updateData({ model: e.target.value })} />
+                                <label className="text-sm font-medium text-slate-300 mb-1.5 block">Model</label>
+                                {models.length > 0 ? (
+                                    <select
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all appearance-none disabled:opacity-50"
+                                        value={data.model}
+                                        disabled={!data.make || catalogLoading}
+                                        onChange={e => updateData({ model: e.target.value, storage: '' })}
+                                    >
+                                        <option value="" disabled>{catalogLoading ? 'Loading...' : 'Select Model...'}</option>
+                                        {models.map(m => <option key={m} value={m}>{m}</option>)}
+                                    </select>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        placeholder={data.make ? 'Type model name...' : 'Select a make first'}
+                                        disabled={!data.make}
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all disabled:opacity-50"
+                                        value={data.model}
+                                        onChange={e => updateData({ model: e.target.value, storage: '' })}
+                                    />
+                                )}
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-slate-300 mb-1.5 block">Storage / Memory</label>
-                                <select className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all appearance-none" value={data.storage} onChange={e => updateData({ storage: e.target.value })}>
-                                    <option value="" disabled>Select Storage...</option>
-                                    <option value="64GB">64GB</option>
-                                    <option value="128GB">128GB</option>
-                                    <option value="256GB">256GB</option>
-                                    <option value="512GB">512GB</option>
-                                    <option value="1TB+">1TB or higher</option>
-                                </select>
+                                {storageOptions.length > 0 ? (
+                                    <select
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all appearance-none disabled:opacity-50"
+                                        value={data.storage}
+                                        disabled={!data.model}
+                                        onChange={e => updateData({ storage: e.target.value })}
+                                    >
+                                        <option value="" disabled>Select Storage...</option>
+                                        {storageOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                ) : (
+                                    <select
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-blue-500 transition-all appearance-none"
+                                        value={data.storage}
+                                        onChange={e => updateData({ storage: e.target.value })}
+                                    >
+                                        <option value="" disabled>Select Storage...</option>
+                                        {['32GB','64GB','128GB','256GB','512GB','1TB'].map(s => (
+                                            <option key={s} value={s}>{s}</option>
+                                        ))}
+                                    </select>
+                                )}
                             </div>
                         </div>
                     </div>
