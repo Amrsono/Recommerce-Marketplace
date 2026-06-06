@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import '../../../../core/localization/translations.dart';
 
 // ---------------------------------------------------------------------------
 // Mock store data — replace with an API call in production
@@ -242,6 +243,11 @@ class ProductSubmissionWizard extends ConsumerWidget {
     final notifier = ref.read(submissionProvider.notifier);
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final activeLocale = ref.watch(localeProvider);
+
+    String t(String key, [Map<String, String>? args]) {
+      return AppTranslations.translate(activeLocale, key, args);
+    }
 
     // Can proceed to next step?
     bool canProceed() {
@@ -275,10 +281,13 @@ class ProductSubmissionWizard extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
-          'Sell Your Device',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          t('appTitle'),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+        actions: const [
+          _LanguageMenuButton(),
+        ],
         leading: state.currentStep > 0 && state.currentStep < 4
             ? IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -333,6 +342,55 @@ class ProductSubmissionWizard extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------------
+// Language Menu Button
+// ---------------------------------------------------------------------------
+class _LanguageMenuButton extends ConsumerWidget {
+  const _LanguageMenuButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeLocale = ref.watch(localeProvider);
+
+    final List<(AppLocale, String, String)> langs = [
+      (AppLocale.en, 'English', '🇬🇧'),
+      (AppLocale.fr, 'Français', '🇫🇷'),
+      (AppLocale.es, 'Español', '🇪🇸'),
+      (AppLocale.pt, 'Português', '🇧🇷'),
+      (AppLocale.ar, 'العربية', '🇦🇪'),
+    ];
+
+    return PopupMenuButton<AppLocale>(
+      icon: const Icon(Icons.language, color: Colors.white),
+      color: const Color(0xFF0F172A),
+      onSelected: (locale) {
+        ref.read(localeProvider.notifier).setLocale(locale);
+      },
+      itemBuilder: (context) {
+        return langs.map((l) {
+          final isSelected = l.$1 == activeLocale;
+          return PopupMenuItem<AppLocale>(
+            value: l.$1,
+            child: Row(
+              children: [
+                Text(l.$3),
+                const SizedBox(width: 8),
+                Text(
+                  l.$2,
+                  style: TextStyle(
+                    color: isSelected ? const Color(0xFF60A5FA) : Colors.white,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList();
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Progress Bar
 // ---------------------------------------------------------------------------
 class _ProgressBar extends StatelessWidget {
@@ -369,7 +427,7 @@ class _ProgressBar extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Bottom Action Bar
 // ---------------------------------------------------------------------------
-class _BottomBar extends StatelessWidget {
+class _BottomBar extends ConsumerWidget {
   final SubmissionState state;
   final SubmissionNotifier notifier;
   final bool canProceed;
@@ -377,7 +435,11 @@ class _BottomBar extends StatelessWidget {
   const _BottomBar(this.state, this.notifier, this.canProceed);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeLocale = ref.watch(localeProvider);
+    String t(String key, [Map<String, String>? args]) =>
+        AppTranslations.translate(activeLocale, key, args);
+
     final isLast = state.currentStep == 3;
 
     return Container(
@@ -407,7 +469,7 @@ class _BottomBar extends StatelessWidget {
                   ),
                 )
               : Text(
-                  isLast ? 'Submit Request' : 'Next Step →',
+                  isLast ? t('submitRequest') : t('nextStep'),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -423,42 +485,48 @@ class _BottomBar extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Step 0 — Device Details
 // ---------------------------------------------------------------------------
-class _StepDevice extends StatelessWidget {
+class _StepDevice extends ConsumerWidget {
   final SubmissionState state;
   final SubmissionNotifier notifier;
   const _StepDevice({required this.state, required this.notifier, super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeLocale = ref.watch(localeProvider);
+    String t(String key, [Map<String, String>? args]) =>
+        AppTranslations.translate(activeLocale, key, args);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
           icon: Icons.phone_android_rounded,
           iconColor: const Color(0xFF3B82F6),
-          title: 'What are you selling?',
-          subtitle: 'Tell us the make, model, and storage of your device.',
+          title: t('stepDeviceTitle'),
+          subtitle: t('stepDeviceSubtitle'),
         ),
         const SizedBox(height: 24),
         _DarkDropdown(
-          label: 'Make (Brand)',
+          label: t('labelBrand'),
           value: state.brand,
           items: const ['Apple', 'Samsung', 'Google', 'Sony', 'Other'],
           onChanged: (v) => notifier.updateDetails(brand: v),
+          hintText: t('selectPlaceholder'),
         ),
         const SizedBox(height: 16),
         _DarkTextField(
-          label: 'Exact Model',
-          hint: 'e.g. iPhone 15 Pro Max',
+          label: t('labelModel'),
+          hint: t('hintModel'),
           initialValue: state.model,
           onChanged: (v) => notifier.updateDetails(model: v),
         ),
         const SizedBox(height: 16),
         _DarkDropdown(
-          label: 'Storage',
+          label: t('labelStorage'),
           value: state.storage,
           items: const ['64GB', '128GB', '256GB', '512GB', '1TB+'],
           onChanged: (v) => notifier.updateDetails(storage: v),
+          hintText: t('selectPlaceholder'),
         ),
       ],
     );
@@ -468,28 +536,32 @@ class _StepDevice extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Step 1 — Condition
 // ---------------------------------------------------------------------------
-class _StepCondition extends StatelessWidget {
+class _StepCondition extends ConsumerWidget {
   final SubmissionState state;
   final SubmissionNotifier notifier;
   const _StepCondition({required this.state, required this.notifier, super.key});
 
-  static const _conditions = [
-    {'value': 'Mint', 'desc': 'Flawless screen & body, fully functional'},
-    {'value': 'Good', 'desc': 'Light scratches, completely functional'},
-    {'value': 'Poor', 'desc': 'Heavy wear or deep scratches, functional'},
-    {'value': 'Broken', 'desc': 'Cracked screen, battery issues, won\'t turn on'},
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeLocale = ref.watch(localeProvider);
+    String t(String key, [Map<String, String>? args]) =>
+        AppTranslations.translate(activeLocale, key, args);
+
+    final conditions = [
+      {'value': 'Mint', 'display': t('conditionMint'), 'desc': t('conditionMintDesc')},
+      {'value': 'Good', 'display': t('conditionGood'), 'desc': t('conditionGoodDesc')},
+      {'value': 'Poor', 'display': t('conditionPoor'), 'desc': t('conditionPoorDesc')},
+      {'value': 'Broken', 'display': t('conditionBroken'), 'desc': t('conditionBrokenDesc')},
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
           icon: Icons.star_half_rounded,
           iconColor: const Color(0xFFA855F7),
-          title: 'Device Condition',
-          subtitle: 'Be honest to get the most accurate quote.',
+          title: t('stepConditionTitle'),
+          subtitle: t('stepConditionSubtitle'),
         ),
         const SizedBox(height: 24),
         GridView.count(
@@ -499,7 +571,7 @@ class _StepCondition extends StatelessWidget {
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
           childAspectRatio: 1.6,
-          children: _conditions.map((c) {
+          children: conditions.map((c) {
             final selected = state.condition == c['value'];
             return GestureDetector(
               onTap: () => notifier.updateCondition(c['value']!),
@@ -522,7 +594,7 @@ class _StepCondition extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      c['value']!,
+                      c['display']!,
                       style: TextStyle(
                         color: selected ? const Color(0xFF60A5FA) : Colors.white,
                         fontWeight: FontWeight.bold,
@@ -559,7 +631,7 @@ class _StepCondition extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'This condition requires a physical evaluation — choose how in the next step.',
+                    t('warningEvalRequired'),
                     style: TextStyle(
                       color: const Color(0xFFFDE68A).withOpacity(0.9),
                       fontSize: 12,
@@ -578,23 +650,27 @@ class _StepCondition extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Step 2 — Evaluation Method
 // ---------------------------------------------------------------------------
-class _StepEvaluation extends StatelessWidget {
+class _StepEvaluation extends ConsumerWidget {
   final SubmissionState state;
   final SubmissionNotifier notifier;
   const _StepEvaluation({required this.state, required this.notifier, super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeLocale = ref.watch(localeProvider);
+    String t(String key, [Map<String, String>? args]) =>
+        AppTranslations.translate(activeLocale, key, args);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StepHeader(
           icon: Icons.location_on_rounded,
           iconColor: const Color(0xFF10B981),
-          title: state.needsEvaluation ? 'Evaluation Method' : 'Pickup Location',
+          title: state.needsEvaluation ? t('stepEvalTitle') : t('stepPickupTitle'),
           subtitle: state.needsEvaluation
-              ? 'Choose how you\'d like your device assessed.'
-              : 'Where should we collect the device from?',
+              ? t('stepEvalSubtitle')
+              : t('stepPickupSubtitle'),
         ),
         const SizedBox(height: 24),
 
@@ -602,8 +678,8 @@ class _StepEvaluation extends StatelessWidget {
         if (state.needsEvaluation) ...[
           _EvalMethodCard(
             icon: Icons.home_rounded,
-            title: 'Engineer Home Visit',
-            subtitle: 'An expert visits your home within 24 hours. A £150 dispatch fee applies.',
+            title: t('methodHomeVisit'),
+            subtitle: t('methodHomeVisitDesc'),
             value: 'home-visit',
             selectedValue: state.evaluationMethod,
             selectedColor: const Color(0xFF2563EB),
@@ -612,8 +688,8 @@ class _StepEvaluation extends StatelessWidget {
           const SizedBox(height: 12),
           _EvalMethodCard(
             icon: Icons.storefront_rounded,
-            title: 'Visit Nearest Store',
-            subtitle: 'Drop your device at one of our stores. No dispatch fee — walk in anytime.',
+            title: t('methodStore'),
+            subtitle: t('methodStoreDesc'),
             value: 'store',
             selectedValue: state.evaluationMethod,
             selectedColor: const Color(0xFF10B981),
@@ -625,8 +701,8 @@ class _StepEvaluation extends StatelessWidget {
         // Home visit: address input + fee acceptance
         if (state.evaluationMethod == 'home-visit' || !state.needsEvaluation) ...[
           _DarkTextField(
-            label: state.needsEvaluation ? 'Your Home Address' : 'Full Pickup Address',
-            hint: '123 Example Street, London, EC1A 1BB',
+            label: state.needsEvaluation ? t('labelAddressHome') : t('labelAddressPickup'),
+            hint: t('hintAddress'),
             initialValue: state.address,
             onChanged: notifier.updateAddress,
             maxLines: 3,
@@ -643,7 +719,7 @@ class _StepEvaluation extends StatelessWidget {
         // Store visit: store picker
         if (state.evaluationMethod == 'store') ...[
           Text(
-            'Select Your Nearest Store',
+            t('labelSelectStore'),
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
               fontSize: 13,
@@ -732,7 +808,7 @@ class _StepEvaluation extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
-              'Distances are approximate. No appointment needed — just walk in.',
+              t('warningDistances'),
               style: TextStyle(
                   color: Colors.white.withOpacity(0.3), fontSize: 11),
               textAlign: TextAlign.center,
@@ -747,13 +823,23 @@ class _StepEvaluation extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Step 3 — Summary
 // ---------------------------------------------------------------------------
-class _StepSummary extends StatelessWidget {
+class _StepSummary extends ConsumerWidget {
   final SubmissionState state;
   const _StepSummary({required this.state, super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeLocale = ref.watch(localeProvider);
+    String t(String key, [Map<String, String>? args]) =>
+        AppTranslations.translate(activeLocale, key, args);
+
     final store = state.selectedStore;
+
+    String localizedCondition = state.condition ?? '';
+    if (state.condition == 'Mint') localizedCondition = t('conditionMint');
+    if (state.condition == 'Good') localizedCondition = t('conditionGood');
+    if (state.condition == 'Poor') localizedCondition = t('conditionPoor');
+    if (state.condition == 'Broken') localizedCondition = t('conditionBroken');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -761,21 +847,21 @@ class _StepSummary extends StatelessWidget {
         _StepHeader(
           icon: Icons.check_circle_outline_rounded,
           iconColor: const Color(0xFF2563EB),
-          title: 'Almost Done',
-          subtitle: 'Review your submission before sending.',
+          title: t('stepSummaryTitle'),
+          subtitle: t('stepSummarySubtitle'),
         ),
         const SizedBox(height: 24),
         _SummaryCard(rows: [
-          ('Device', '${state.brand ?? ''} ${state.model ?? ''} (${state.storage ?? ''})'),
-          ('Condition', state.condition ?? ''),
+          (t('summaryRowDevice'), '${state.brand ?? ''} ${state.model ?? ''} (${state.storage ?? ''})'),
+          (t('summaryRowCondition'), localizedCondition),
           if (state.needsEvaluation)
-            ('Evaluation',
-                state.evaluationMethod == 'store' ? '🏪 Store Visit' : '🏠 Home Visit'),
+            (t('summaryRowEvaluation'),
+                state.evaluationMethod == 'store' ? t('summaryStoreVisit') : t('summaryHomeVisit')),
           if (state.evaluationMethod == 'store' && store != null)
-            ('Store', store['name'] ?? ''),
+            (t('summaryRowStore'), store['name'] ?? ''),
           if (state.evaluationMethod == 'home-visit' &&
               (state.address?.isNotEmpty ?? false))
-            ('Address', state.address ?? ''),
+            (t('summaryRowAddress'), state.address ?? ''),
         ]),
         if (state.needsEvaluation && state.evaluationMethod == 'store' && store != null) ...[
           const SizedBox(height: 16),
@@ -796,9 +882,9 @@ class _StepSummary extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'In-Store Evaluation — No Fee',
-                        style: TextStyle(
+                      Text(
+                        t('inStoreEvalNoFee'),
+                        style: const TextStyle(
                           color: Color(0xFF34D399),
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
@@ -806,7 +892,10 @@ class _StepSummary extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Visit ${store['name']} during opening hours: ${store['hours']}. Our team will evaluate your device on the spot.',
+                        t('inStoreEvalDesc', {
+                          'storeName': store['name'] ?? '',
+                          'storeHours': store['hours'] ?? '',
+                        }),
                         style: TextStyle(
                             color: Colors.white.withOpacity(0.6), fontSize: 12),
                       ),
@@ -834,7 +923,7 @@ class _StepSummary extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'An engineer will visit within 24 hours. A £150 dispatch fee will be deducted from your final payout.',
+                    t('homeVisitEvalDesc'),
                     style: TextStyle(
                         color: Colors.white.withOpacity(0.6), fontSize: 12),
                   ),
@@ -853,7 +942,9 @@ class _StepSummary extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              state.errorMessage!,
+              state.errorMessage == 'Submission failed. Please try again.'
+                  ? t('errorDefault')
+                  : state.errorMessage!,
               style: const TextStyle(color: Colors.redAccent, fontSize: 13),
             ),
           ),
@@ -866,12 +957,16 @@ class _StepSummary extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Step 4 — Success
 // ---------------------------------------------------------------------------
-class _StepSuccess extends StatelessWidget {
+class _StepSuccess extends ConsumerWidget {
   final SubmissionState state;
   const _StepSuccess({required this.state, super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeLocale = ref.watch(localeProvider);
+    String t(String key, [Map<String, String>? args]) =>
+        AppTranslations.translate(activeLocale, key, args);
+
     final store = state.selectedStore;
     final isStore = state.evaluationMethod == 'store';
 
@@ -899,9 +994,9 @@ class _StepSuccess extends StatelessWidget {
                 color: Color(0xFF10B981), size: 44),
           ),
           const SizedBox(height: 24),
-          const Text(
-            'Ticket Created!',
-            style: TextStyle(
+          Text(
+            t('ticketCreated'),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -922,10 +1017,10 @@ class _StepSuccess extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               isStore && store != null
-                  ? 'Visit ${store['name']} at your convenience to complete the evaluation.'
+                  ? t('successStoreDesc', {'storeName': store['name'] ?? ''})
                   : state.needsEvaluation
-                      ? 'Our engineer dispatch team has been notified and will contact you to arrange a visit.'
-                      : 'Expect an email shortly with collection details.',
+                      ? t('successHomeDesc')
+                      : t('successStandardDesc'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white.withOpacity(0.55),
@@ -1092,12 +1187,14 @@ class _DarkDropdown extends StatelessWidget {
   final String? value;
   final List<String> items;
   final ValueChanged<String?> onChanged;
+  final String? hintText;
 
   const _DarkDropdown({
     required this.label,
     this.value,
     required this.items,
     required this.onChanged,
+    this.hintText,
   });
 
   @override
@@ -1133,7 +1230,7 @@ class _DarkDropdown extends StatelessWidget {
               borderSide: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
             ),
           ),
-          hint: Text('Select...',
+          hint: Text(hintText ?? 'Select...',
               style: TextStyle(color: Colors.white.withOpacity(0.25))),
           items: items
               .map((e) => DropdownMenuItem(
@@ -1224,13 +1321,17 @@ class _EvalMethodCard extends StatelessWidget {
   }
 }
 
-class _FeeAcceptance extends StatelessWidget {
+class _FeeAcceptance extends ConsumerWidget {
   final bool accepted;
   final ValueChanged<bool> onChanged;
   const _FeeAcceptance({required this.accepted, required this.onChanged});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeLocale = ref.watch(localeProvider);
+    String t(String key, [Map<String, String>? args]) =>
+        AppTranslations.translate(activeLocale, key, args);
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1256,18 +1357,18 @@ class _FeeAcceptance extends StatelessWidget {
                 text: TextSpan(
                   style: TextStyle(
                       color: Colors.white.withOpacity(0.65), fontSize: 13),
-                  children: const [
+                  children: [
                     TextSpan(
-                      text: 'I acknowledge and accept ',
+                      text: t('checkboxFeeAcknowledgement').split('{fee}').first,
                     ),
                     TextSpan(
-                      text: 'the £150 operational dispatch fee',
-                      style: TextStyle(
+                      text: t('feeAmountText'),
+                      style: const TextStyle(
                           color: Color(0xFFFBBF24), fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                        text:
-                            ' which will be deducted from my final payout.'),
+                      text: t('checkboxFeeAcknowledgement').split('{fee}').last,
+                    ),
                   ],
                 ),
               ),

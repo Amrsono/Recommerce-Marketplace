@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { useRouter } from "next/navigation";
 import { 
     User as UserIcon, 
@@ -49,6 +51,7 @@ function statusColor(status: string) {
 
 export default function ProfilePage() {
     const { user } = useAuth();
+    const { t } = useLanguage();
     const router = useRouter();
     const [profileData, setProfileData] = useState<any>(null);
     const [activeTab, setActiveTab] = useState<'orders' | 'chat' | 'payments'>('orders');
@@ -270,7 +273,7 @@ export default function ProfilePage() {
                                 className="object-contain"
                             />
                         </div>
-                        <span className="font-bold text-lg text-white">Lotsitems</span>
+                        <span className="font-bold text-lg text-white">{t("navBrand")}</span>
                     </Link>
                     <div className="flex items-center gap-4">
                         <button className="p-2 text-slate-400 hover:text-white transition-colors relative">
@@ -279,6 +282,7 @@ export default function ProfilePage() {
                                 <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border border-[#0A0A0A]" />
                             )}
                         </button>
+                        <LanguageSelector />
                         <Link href="/profile" className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white hover:scale-110 transition-transform active:scale-95 shadow-lg shadow-blue-500/20">
                             {user.name?.[0]}
                         </Link>
@@ -305,10 +309,10 @@ export default function ProfilePage() {
 
                         <div className="space-y-1">
                             {[
-                                { id: 'orders', label: 'My Orders', icon: History },
-                                { id: 'chat', label: 'Support Chat', icon: MessageSquare },
-                                { id: 'payments', label: 'Payout Methods', icon: CreditCard },
-                                { id: 'settings', label: 'Settings', icon: Settings },
+                                { id: 'orders', label: t('profileMyOrders') || 'My Orders', icon: History },
+                                { id: 'chat', label: t('profileSupportChat') || 'Support Chat', icon: MessageSquare },
+                                { id: 'payments', label: t('profilePayoutMethods') || 'Payout Methods', icon: CreditCard },
+                                { id: 'settings', label: t('profileSettings') || 'Settings', icon: Settings },
                             ].map((item) => (
                                 <button
                                     key={item.id}
@@ -554,7 +558,7 @@ export default function ProfilePage() {
                              ))}
                         </div>
                     </div>
-
+                </div>
             </main>
 
             {/* Add Payout Method Modal */}

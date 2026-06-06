@@ -1,0 +1,29 @@
+Admin and Customer Accounts
+Admin Account:
+
+Email: admin@test.com
+Password: password123
+Role: ADMIN
+Sample Customer Account:
+
+Email: customer@test.com
+Password: password123
+Role: CUSTOMER
+Vendor Accounts
+All vendor accounts use the password vendor123.
+
+TechBay Electronics:
+
+Email: techbay@vendor.com
+Password: vendor123
+Role: VENDOR
+GadgetHub Dubai:
+
+Email: gadgethub@vendor.com
+Password: vendor123
+Role: VENDOR
+SmartDeal MENA:
+
+Email: smartdeal@vendor.com
+Password: vendor123
+Role: VENDOR

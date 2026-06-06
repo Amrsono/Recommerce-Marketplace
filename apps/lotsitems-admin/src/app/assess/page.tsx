@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -93,15 +95,23 @@ function estimatePrice(condition: string, deviceName: string): number {
 
 export default function AssessPage() {
     const { user, isLoading } = useAuth();
+    const { t } = useLanguage();
     const router = useRouter();
 
     const [step, setStep] = useState<JourneyStep>("ASK_DEVICE");
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            role: "ai",
-            content: "Hi there! I'm your AI Assessment Agent. What device are you looking to sell today? (e.g. \"iPhone 15 Pro Max\", \"Samsung Galaxy S24 Ultra\")"
+    const [messages, setMessages] = useState<Message[]>([]);
+
+    useEffect(() => {
+        if (messages.length === 0) {
+            setMessages([
+                {
+                    role: "ai",
+                    content: t("assessHi") || "Hi there! I'm your AI Assessment Agent. What device are you looking to sell today? (e.g. \"iPhone 15 Pro Max\", \"Samsung Galaxy S24 Ultra\")"
+                }
+            ]);
         }
-    ]);
+    }, [t, messages.length]);
+
     const [input, setInput] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [ticketId, setTicketId] = useState<string | null>(null);
@@ -168,7 +178,7 @@ export default function AssessPage() {
         if (step === "ASK_DEVICE") {
             setDevice(d => ({ ...d, deviceName: text }));
             setStep("ASK_STORAGE");
-            aiReply(`Great choice! I've noted the **${text}**. What storage / memory configuration is it? (e.g. 256GB, 128GB / 8GB RAM)`);
+            aiReply(t("assessStorage") || `Great choice! I've noted the **${text}**. What storage / memory configuration is it? (e.g. 256GB, 128GB / 8GB RAM)`);
 
         } else if (step === "ASK_STORAGE") {
             setDevice(d => ({ ...d, storage: text }));
@@ -182,7 +192,7 @@ export default function AssessPage() {
             const cond = parseConditionFromText(text);
             setDevice(d => ({ ...d, condition: cond }));
             setStep("ASK_PRICE");
-            aiReply(`Got it — I'm logging the condition as **${cond}**. What's your asking price in £? (Enter numbers only, e.g. 450)`);
+            aiReply(t("assessAskingPrice") || `Got it — I'm logging the condition as **${cond}**. What's your asking price in £? (Enter numbers only, e.g. 450)`);
 
         } else if (step === "ASK_PRICE") {
             const price = text.replace(/[^0-9.]/g, "");
@@ -452,11 +462,12 @@ export default function AssessPage() {
                     </Link>
                     <div className="flex items-center gap-2">
                         <Bot className="w-6 h-6 text-blue-500" />
-                        <h1 className="font-bold text-white hidden sm:block">AI Device Evaluation</h1>
+                        <h1 className="font-bold text-white hidden sm:block">{t("assessTitle") || "AI Device Evaluation"}</h1>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
                     <StepPills current={step} />
+                    <LanguageSelector />
                     <Link href={user?.role === "ADMIN" ? "/admin" : (user?.role === "VENDOR" ? "/vendor" : "/profile")} className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/20 border border-white/5 ml-2">
                         {user.name?.[0]}
                     </Link>

@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import {
     ArrowRight, ArrowLeft, CheckCircle2, AlertTriangle, MonitorSmartphone,
     MapPin, DollarSign, CheckSquare, Camera, UploadCloud, Image as ImageIcon,
@@ -12,9 +14,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 
-// ---------------------------------------------------------------------------
-// Mock store locations — replace with real data / API as needed
-// ---------------------------------------------------------------------------
 const STORES = [
     { id: "store-1", name: "Lotsitems — City Centre", address: "14 Market Street, London, EC2V 8DY", distance: "0.4 mi", hours: "Mon–Sat 9am–6pm" },
     { id: "store-2", name: "Lotsitems — East End",    address: "82 Whitechapel Rd, London, E1 1JX",  distance: "1.2 mi", hours: "Mon–Sat 10am–7pm" },
@@ -39,6 +38,7 @@ type OfferData = {
 
 export default function OfferJourney() {
     const { user, isLoading } = useAuth();
+    const { t } = useLanguage();
     const router = useRouter();
 
     const [step, setStep] = useState(1);
@@ -100,12 +100,10 @@ export default function OfferJourney() {
     const nextStep = () => {
         if (step === 1 && (!data.make || !data.model || !data.storage)) return;
         if (step === 2 && (!data.condition || !data.askedPrice)) return;
-        // Step 3 (Photos) is optional
         if (step === 4) {
             if (needsEvaluation && !data.evaluationMethod) return;
             if (data.evaluationMethod === "home-visit" && !data.address) return;
             if (data.evaluationMethod === "store" && !data.selectedStoreId) return;
-            // Non-Poor/Broken still need address for pickup
             if (!needsEvaluation && !data.address) return;
         }
         if (step === 5 && needsEvaluation && data.evaluationMethod === "home-visit" && !data.acceptFee) return;
@@ -164,13 +162,14 @@ export default function OfferJourney() {
             <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-20">
                 <Link href="/" className="font-bold text-xl tracking-tight text-white flex items-center gap-3">
                     <div className="relative w-8 h-8 overflow-hidden rounded-md border border-slate-700 bg-slate-950">
-                        <Image src="/logo.png" alt="Lotsitems Logo" fill className="object-contain" />
+                        <Image src="/logo.png" alt={t("navBrand")} fill className="object-contain" />
                     </div>
-                    Lotsitems
+                    {t("navBrand")}
                 </Link>
                 {step < 6 && (
                     <div className="flex items-center gap-4">
                         <div className="text-sm font-medium text-slate-400 hidden sm:block">Step {step} of 5</div>
+                        <LanguageSelector />
                         <Link
                             href={user?.role === "ADMIN" ? "/admin" : user?.role === "VENDOR" ? "/vendor" : "/profile"}
                             className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white hover:scale-110 transition-all active:scale-95 shadow-lg shadow-blue-500/20 border border-white/5"
@@ -527,7 +526,6 @@ export default function OfferJourney() {
                                     <span className="font-bold text-emerald-400">£{data.askedPrice}</span>
                                 </div>
 
-                                {/* Evaluation / Pickup method */}
                                 {needsEvaluation ? (
                                     <div className="flex justify-between border-b border-slate-800 pb-3">
                                         <span className="text-slate-400">Evaluation Method</span>
@@ -549,7 +547,6 @@ export default function OfferJourney() {
                             </div>
                         </div>
 
-                        {/* Engineer home visit warning — only if home-visit chosen */}
                         {needsEvaluation && data.evaluationMethod === "home-visit" && (
                             <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-5 mb-6 flex gap-4 animate-in fade-in zoom-in-95 duration-500">
                                 <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0 mt-1" />
@@ -573,7 +570,6 @@ export default function OfferJourney() {
                             </div>
                         )}
 
-                        {/* Store visit confirmation banner */}
                         {needsEvaluation && data.evaluationMethod === "store" && (
                             <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-5 mb-6 flex gap-4 animate-in fade-in zoom-in-95 duration-500">
                                 <Store className="w-6 h-6 text-emerald-400 shrink-0 mt-1" />
@@ -595,14 +591,9 @@ export default function OfferJourney() {
                         <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-emerald-500/20 shadow-[0_0_50px_-15px_rgba(16,185,129,0.5)]">
                             <CheckCircle2 className="w-12 h-12 text-emerald-500" />
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-3">Ticket Successfully Created!</h2>
+                        <h2 className="text-3xl font-bold text-white mb-3">{t("assessDone")}</h2>
                         <p className="text-slate-400 max-w-sm mx-auto mb-8">
-                            We've created ticket <strong className="text-slate-200">#{ticketId || `TKT-${(Math.random() * 10000).toFixed(0)}`}</strong> for your {data.model}.{" "}
-                            {data.evaluationMethod === "store"
-                                ? <>Visit <span className="text-emerald-400 font-semibold">{selectedStore?.name}</span> at your convenience to complete the evaluation.</>
-                                : data.condition === "Poor" || data.condition === "Broken"
-                                    ? "Our engineer dispatch team has been notified and will contact you to arrange a visit."
-                                    : "Expect an email shortly with the exact delivery label details."}
+                            {t("assessOrderSuccess")} <strong className="text-slate-200">#{ticketId || `TKT-${(Math.random() * 10000).toFixed(0)}`}</strong>.
                         </p>
                         {data.evaluationMethod === "store" && selectedStore && (
                             <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-left max-w-xs mx-auto mb-6">
@@ -614,7 +605,7 @@ export default function OfferJourney() {
                         )}
                         <div className="flex flex-col gap-3">
                             <Link href={user?.role === "ADMIN" ? "/admin" : user?.role === "VENDOR" ? "/vendor" : "/profile"} className="bg-slate-800 hover:bg-slate-700 text-white rounded-full px-6 py-3 font-semibold transition-colors">
-                                Track your order
+                                {t("assessTrackOrder")}
                             </Link>
                             <Link href="/" className="text-slate-400 hover:text-white text-sm font-medium transition-colors">Return to Landing Page</Link>
                         </div>

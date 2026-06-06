@@ -77,8 +77,8 @@ export default function LandingPage() {
 
           {/* Page Links */}
           <div className="hidden md:flex items-center gap-5 text-sm font-medium text-slate-400">
-            <Link href="/about" className="hover:text-white transition-colors">About</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+            <Link href="/about" className="hover:text-white transition-colors">{t('navAbout')}</Link>
+            <Link href="/contact" className="hover:text-white transition-colors">{t('navContact')}</Link>
           </div>
 
           {user ? (

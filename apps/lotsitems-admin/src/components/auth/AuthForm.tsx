@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useSearchParams } from "next/navigation";
 import { ScanLine, ArrowRight } from "lucide-react";
 
@@ -12,6 +13,7 @@ export function AuthForm() {
     const [name, setName] = useState("");
 
     const { login, register } = useAuth();
+    const { t } = useLanguage();
     const searchParams = useSearchParams();
     const redirectTo = searchParams.get("redirect") || undefined;
 
@@ -31,19 +33,19 @@ export function AuthForm() {
                     <ScanLine className="w-6 h-6 text-blue-500" />
                 </div>
                 <h1 className="text-2xl font-bold text-white text-center">
-                    {isLogin ? "Welcome back" : "Create an account"}
+                    {isLogin ? t("authWelcomeBack") : t("authCreateAccount")}
                 </h1>
                 <p className="text-slate-400 mt-2 text-sm text-center">
                     {isLogin
-                        ? "Enter your credentials to access your account"
-                        : "Start turning your old devices into fast cash"}
+                        ? t("authWelcomeBackDesc")
+                        : t("authCreateAccountDesc")}
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {!isLogin && (
                     <div className="space-y-1.5">
-                        <label className="text-sm font-medium text-slate-300">Full Name</label>
+                        <label className="text-sm font-medium text-slate-300">{t("authFullName")}</label>
                         <input
                             type="text"
                             required={!isLogin}
@@ -56,7 +58,7 @@ export function AuthForm() {
                 )}
 
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-300">Email address</label>
+                    <label className="text-sm font-medium text-slate-300">{t("authEmail")}</label>
                     <input
                         type="email"
                         required
@@ -68,7 +70,7 @@ export function AuthForm() {
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-300">Password</label>
+                    <label className="text-sm font-medium text-slate-300">{t("authPassword")}</label>
                     <input
                         type="password"
                         required
@@ -79,24 +81,22 @@ export function AuthForm() {
                     />
                 </div>
 
-
-
                 <button
                     type="submit"
                     className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg px-4 py-3 mt-6 transition-colors flex items-center justify-center gap-2 group"
                 >
-                    {isLogin ? "Sign In" : "Create Account"}
+                    {isLogin ? t("navSignIn") : t("authCreateAccountBtn")}
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
             </form>
 
             <div className="mt-6 text-center text-sm text-slate-400">
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                {isLogin ? t("authNoAccount") : t("authHaveAccount")}
                 <button
                     onClick={() => setIsLogin(!isLogin)}
                     className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
                 >
-                    {isLogin ? "Sign up" : "Sign in"}
+                    {isLogin ? t("authSignUpLink") : t("navSignIn")}
                 </button>
             </div>
         </div>

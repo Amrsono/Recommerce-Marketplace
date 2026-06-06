@@ -122,7 +122,8 @@ router.post('/:identifier/payment-methods', async (req: Request, res: Response) 
 // Delete a payment method
 router.delete('/:identifier/payment-methods/:id', async (req: Request, res: Response) => {
     try {
-        const { identifier, id } = req.params;
+        const identifier = req.params.identifier as string;
+        const id = req.params.id as string;
 
         const isEmail = identifier.includes('@');
         const user = await prisma.user.findFirst({
@@ -169,7 +170,8 @@ router.delete('/:identifier/payment-methods/:id', async (req: Request, res: Resp
 // Set a payment method as default
 router.patch('/:identifier/payment-methods/:id/default', async (req: Request, res: Response) => {
     try {
-        const { identifier, id } = req.params;
+        const identifier = req.params.identifier as string;
+        const id = req.params.id as string;
 
         const isEmail = identifier.includes('@');
         const user = await prisma.user.findFirst({

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Gavel, DollarSign, Smartphone, Clock, TrendingUp, Trophy, Medal, Award, ChevronDown, ChevronUp } from 'lucide-react';
 
 type Bid = {
@@ -18,9 +19,9 @@ type Bid = {
     };
 };
 
-const getTimeLeft = (deadlineStr: string) => {
+const getTimeLeft = (deadlineStr: string, t: any) => {
     const diff = new Date(deadlineStr).getTime() - new Date().getTime();
-    if (diff <= 0) return 'Expired';
+    if (diff <= 0) return t('vendorExpired');
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours}h ${minutes}m`;
@@ -51,6 +52,7 @@ const RankBadge = ({ rank }: { rank: number }) => {
 
 export default function VendorDashboard() {
     const { user } = useAuth();
+    const { t } = useLanguage();
     const [tickets, setTickets] = useState<any[]>([]);
     const [bidAmounts, setBidAmounts] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState<string | null>(null);
@@ -123,15 +125,15 @@ export default function VendorDashboard() {
         <div className="space-y-8 max-w-6xl mx-auto">
             <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Live Marketplace</h1>
-                    <p className="text-slate-400">Review AI evaluations and submit your bids. All competing bids are visible for fair competition.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-white mb-2">{t("vendorLiveMarketplace")}</h1>
+                    <p className="text-slate-400">{t("vendorMarketSubtitle")}</p>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-slate-400 bg-slate-900 px-4 py-2 rounded-lg border border-slate-800">
                     <span className="relative flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                     </span>
-                    Live Updates Active
+                    {t("vendorLiveUpdates")}
                 </div>
             </div>
 
@@ -139,8 +141,8 @@ export default function VendorDashboard() {
                 {tickets.length === 0 ? (
                     <div className="col-span-full py-20 text-center bg-slate-900/50 rounded-2xl border border-slate-800 border-dashed">
                         <Smartphone className="w-12 h-12 text-slate-600 mx-auto mb-4 opacity-50" />
-                        <h3 className="text-lg font-medium text-slate-300">Market is quiet</h3>
-                        <p className="text-slate-500">No new devices available for bidding right now. Check back soon!</p>
+                        <h3 className="text-lg font-medium text-slate-300">{t("vendorMarketQuiet")}</h3>
+                        <p className="text-slate-500">{t("vendorNoDevices")}</p>
                     </div>
                 ) : (
                     tickets.map(ticket => {
@@ -165,7 +167,7 @@ export default function VendorDashboard() {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">AI Baseline</p>
+                                            <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{t("vendorAIBaseline")}</p>
                                             <p className="text-xl font-bold text-green-400">${ticket.estimatedVal || '0.00'}</p>
                                         </div>
                                     </div>
@@ -173,11 +175,11 @@ export default function VendorDashboard() {
                                     {/* Device specs */}
                                     <div className="space-y-3 mb-5 bg-slate-950/50 p-4 rounded-lg border border-slate-800/50">
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400">Condition</span>
+                                            <span className="text-slate-400">{t("vendorCondition")}</span>
                                             <span className="font-medium text-white">{ticket.condition || 'Good'}</span>
                                         </div>
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400">Storage</span>
+                                            <span className="text-slate-400">{t("vendorStorage")}</span>
                                             <span className="font-medium text-white">
                                                 {(() => {
                                                     try {
@@ -188,16 +190,16 @@ export default function VendorDashboard() {
                                             </span>
                                         </div>
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400">Time left</span>
+                                            <span className="text-slate-400">{t("vendorTimeLeft")}</span>
                                             <span className="font-medium text-orange-400 flex items-center gap-1">
-                                                <Clock className="w-3 h-3" /> {getTimeLeft(ticket.slaDeadline)}
+                                                <Clock className="w-3 h-3" /> {getTimeLeft(ticket.slaDeadline, t)}
                                             </span>
                                         </div>
                                         {myBid && myRank && (
                                             <div className="flex justify-between text-sm pt-2 border-t border-slate-800/60">
-                                                <span className="text-slate-400">Your position</span>
+                                                <span className="text-slate-400">{t("vendorYourPosition")}</span>
                                                 <span className={`font-bold ${myRank === 1 ? 'text-yellow-400' : myRank === 2 ? 'text-slate-300' : myRank === 3 ? 'text-amber-600' : 'text-slate-400'}`}>
-                                                    #{myRank} of {ticketBids.length} bid{ticketBids.length !== 1 ? 's' : ''}
+                                                    #{myRank} {t("vendorOf")} {ticketBids.length} {ticketBids.length !== 1 ? t("vendorBids") : t("vendorBid")}
                                                 </span>
                                             </div>
                                         )}
@@ -211,10 +213,10 @@ export default function VendorDashboard() {
                                         >
                                             <div className="flex items-center gap-2">
                                                 <TrendingUp className="w-4 h-4 text-blue-400" />
-                                                <span className="text-sm font-semibold text-white">Live Bid Leaderboard</span>
+                                                <span className="text-sm font-semibold text-white">{t("vendorLeaderboard")}</span>
                                                 {ticketBids.length > 0 && (
                                                     <span className="text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-medium">
-                                                        {ticketBids.length} bid{ticketBids.length !== 1 ? 's' : ''}
+                                                        {ticketBids.length} {ticketBids.length !== 1 ? t("vendorBids") : t("vendorBid")}
                                                     </span>
                                                 )}
                                             </div>
@@ -229,14 +231,14 @@ export default function VendorDashboard() {
                                                 {ticketBids.length === 0 ? (
                                                     <div className="px-4 py-6 text-center">
                                                         <Gavel className="w-6 h-6 text-slate-600 mx-auto mb-2" />
-                                                        <p className="text-sm text-slate-500">No bids yet — be the first to bid!</p>
+                                                        <p className="text-sm text-slate-500">{t("vendorNoBids")}</p>
                                                     </div>
                                                 ) : (
                                                     ticketBids.map((bid, index) => {
                                                         const rank = index + 1;
                                                         const isMe = bid.vendorId === user?.id;
                                                         // Anonymize other vendors: show "Bidder #N" based on their position
-                                                        const displayName = isMe ? 'You' : `Bidder #${index + 1}`;
+                                                        const displayName = isMe ? t("vendorYou") : `${t("vendorBidder")} #${index + 1}`;
 
                                                         return (
                                                             <div
@@ -258,12 +260,12 @@ export default function VendorDashboard() {
                                                                         </span>
                                                                         {isMe && (
                                                                             <span className="text-[10px] bg-blue-500/30 text-blue-300 border border-blue-500/40 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                                                                                Your bid
+                                                                                {t("vendorCurrentBid")}
                                                                             </span>
                                                                         )}
                                                                         {rank === 1 && !isMe && (
                                                                             <span className="text-[10px] bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                                                                                Leading
+                                                                                {t("vendorLeading")}
                                                                             </span>
                                                                         )}
                                                                     </div>
@@ -290,18 +292,18 @@ export default function VendorDashboard() {
                                             <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
                                                 <span className="flex items-center gap-1">
                                                     <Trophy className="w-3 h-3 text-yellow-400" />
-                                                    Current leader:
+                                                    {t("vendorCurrentLeader")}:
                                                     <span className="text-yellow-400 font-bold">${leadingBid.amount.toFixed(2)}</span>
                                                 </span>
                                                 {myBid && myRank && myRank > 1 && (
                                                     <span className="text-orange-400 font-medium">
-                                                        Bid &gt; ${leadingBid.amount.toFixed(2)} to lead
+                                                        {t("vendorBid")} &gt; ${leadingBid.amount.toFixed(2)} {t("vendorBidToLead")}
                                                     </span>
                                                 )}
                                             </div>
                                         )}
                                         <label className="text-sm font-medium text-slate-300">
-                                            {myBid ? 'Update Your Bid (USD)' : 'Your Bid (USD)'}
+                                            {myBid ? t("vendorUpdateBid") : t("vendorYourBid")}
                                         </label>
                                         <div className="flex gap-3">
                                             <div className="relative flex-1">
@@ -320,19 +322,19 @@ export default function VendorDashboard() {
                                                 className="bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-500 text-white px-6 rounded-lg font-semibold transition-colors flex items-center gap-2"
                                             >
                                                 <Gavel className="w-5 h-5" />
-                                                {submitting === ticket.id ? 'Placing...' : myBid ? 'Update' : 'Place Bid'}
+                                                {submitting === ticket.id ? t("vendorPlacing") : myBid ? t("vendorUpdate") : t("vendorPlaceBid")}
                                             </button>
                                         </div>
                                         {myBid && (
                                             <p className="text-xs text-slate-500">
-                                                Your current bid: <span className="text-blue-400 font-semibold">${myBid.amount.toFixed(2)}</span>. Submitting will update it.
+                                                {t("vendorCurrentBid")}: <span className="text-blue-400 font-semibold">${myBid.amount.toFixed(2)}</span>. {t("vendorSubmittingUpdate")}.
                                             </p>
                                         )}
                                     </div>
                                 </div>
                             </div>
                         );
-                    })
+                     })
                 )}
             </div>
         </div>

@@ -4,11 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { LogOut, LayoutDashboard, Store } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function VendorLayout({ children }: { children: React.ReactNode }) {
     const { logout, user } = useAuth();
+    const { t } = useLanguage();
     const pathname = usePathname();
     const router = useRouter();
 
@@ -27,12 +29,12 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
                     <div className="relative w-8 h-8 overflow-hidden rounded-md border border-slate-700 bg-slate-950">
                         <Image src="/logo.png" alt="Lotsitems B2B" fill className="object-contain" />
                     </div>
-                    <span className="font-bold text-xl tracking-tight">Lotsitems B2B</span>
+                    <span className="font-bold text-xl tracking-tight">{t("vendorBrand")}</span>
                 </div>
                 <nav className="flex-1 space-y-2">
                     <Link href="/vendor" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname === '/vendor' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white'}`}>
                         <Store className="w-5 h-5" />
-                        Live Marketplace
+                        {t("vendorLiveMarketplace")}
                     </Link>
                 </nav>
                 <div className="pt-4 border-t border-slate-800 mt-auto">
