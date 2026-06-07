@@ -23,14 +23,19 @@ app.prepare().then(() => {
 
   createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
+    const pathname = parsedUrl.pathname || '';
+    
+    console.log(`[Server] ${req.method} ${req.url} -> pathname: ${pathname} apiApp: ${!!apiApp}`);
     
     // Route API requests to the Express app
-    if (parsedUrl.pathname && parsedUrl.pathname.startsWith('/api') && apiApp) {
-      req.url = parsedUrl.path; // Normalize URL for Express
+    if (pathname.startsWith('/api') && apiApp) {
+      req.url = parsedUrl.path || req.url; // Normalize URL for Express
+      console.log(`[Server] Routing to Express: ${req.method} ${req.url}`);
       return apiApp(req, res);
     }
     
     // Otherwise route to Next.js
+    console.log(`[Server] Routing to Next.js: ${req.method} ${pathname}`);
     handle(req, res, parsedUrl);
   }).listen(port, (err) => {
     if (err) throw err;

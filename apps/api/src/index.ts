@@ -38,6 +38,12 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+// Request logging middleware
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.log(`[Express] ${req.method} ${req.url} | body-keys: ${Object.keys(req.body || {}).join(',')} | content-type: ${req.headers['content-type']}`);
+    next();
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.json({ success: true, status: 'ok', message: 'Express API is running', timestamp: new Date().toISOString() });
