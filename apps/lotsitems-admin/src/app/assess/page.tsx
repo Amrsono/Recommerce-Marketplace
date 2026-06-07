@@ -142,7 +142,7 @@ export default function AssessPage() {
 
         const interval = setInterval(async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/devices/handoff/${handoffSessionId}`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/devices/handoff/${handoffSessionId}`);
                 if (!res.ok) return;
                 const data = await res.json();
                 if (data.success && data.session.status === 'UPLOADED') {
@@ -240,7 +240,7 @@ export default function AssessPage() {
         setIsTyping(true);
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
             const response = await fetch(`${apiUrl}/devices/evaluate-image`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -420,7 +420,7 @@ export default function AssessPage() {
         };
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/devices/submit`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/devices/submit`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(apiData),
@@ -813,10 +813,10 @@ function FinalOfferCard({
         setRejecting(true);
         try {
             // First, login/create user
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/profile/setup-test-user`, { method: 'POST' });
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/profile/setup-test-user`, { method: 'POST' });
 
             // Create the device and ticket directly with REJECTED status
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/devices/submit`, {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/devices/submit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

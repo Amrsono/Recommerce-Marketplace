@@ -61,7 +61,7 @@ export default function VendorDashboard() {
 
     const fetchBidsForTicket = useCallback(async (ticketId: string) => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/bids/ticket/${ticketId}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/bids/ticket/${ticketId}`);
             const data = await res.json();
             if (data.success) {
                 setBidsMap(prev => ({ ...prev, [ticketId]: data.bids }));
@@ -73,7 +73,7 @@ export default function VendorDashboard() {
 
     const fetchTickets = useCallback(async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/tickets`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/tickets`);
             const data = await res.json();
             if (data.success) {
                 const openMarket = data.tickets.filter((t: any) => t.status === 'PRICING_ESTIMATED' || t.status === 'OPEN');
@@ -98,7 +98,7 @@ export default function VendorDashboard() {
 
         setSubmitting(ticketId);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/bids`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/bids`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ticketId, vendorId: user?.id, amount })

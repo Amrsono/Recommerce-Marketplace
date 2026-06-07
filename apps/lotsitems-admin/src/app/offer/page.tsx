@@ -115,7 +115,7 @@ export default function OfferJourney() {
 
     // Fetch makes on mount
     useEffect(() => {
-        const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+        const API = process.env.NEXT_PUBLIC_API_URL || '/api';
         fetch(`${API}/catalog/makes`)
             .then(r => r.json())
             .then(d => { if (d.success) setMakes(d.makes); })
@@ -125,7 +125,7 @@ export default function OfferJourney() {
     // Fetch models when make changes
     useEffect(() => {
         if (!data.make) { setModels([]); setStorageOptions([]); return; }
-        const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+        const API = process.env.NEXT_PUBLIC_API_URL || '/api';
         setCatalogLoading(true);
         fetch(`${API}/catalog/models?make=${encodeURIComponent(data.make)}`)
             .then(r => r.json())
@@ -137,7 +137,7 @@ export default function OfferJourney() {
     // Fetch storage when model changes
     useEffect(() => {
         if (!data.make || !data.model) { setStorageOptions([]); return; }
-        const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+        const API = process.env.NEXT_PUBLIC_API_URL || '/api';
         fetch(`${API}/catalog/storage?make=${encodeURIComponent(data.make)}&model=${encodeURIComponent(data.model)}`)
             .then(r => r.json())
             .then(d => { if (d.success) setStorageOptions(d.storageOptions); })
@@ -148,7 +148,7 @@ export default function OfferJourney() {
         if (step !== 3 || !handoffSessionId || !showQR) return;
         const interval = setInterval(async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/devices/handoff/${handoffSessionId}`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/devices/handoff/${handoffSessionId}`);
                 if (!res.ok) return;
                 const result = await res.json();
                 if (result.success && result.session.status === "UPLOADED") {
@@ -213,7 +213,7 @@ export default function OfferJourney() {
                 userName: user?.name,
             };
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/devices/submit`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/devices/submit`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(apiData),

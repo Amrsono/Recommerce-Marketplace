@@ -26,7 +26,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         const fetchStats = () => {
-            fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/stats`)
+            fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/stats`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
