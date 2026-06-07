@@ -11,8 +11,24 @@ const app = next({
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
+  // Import the compiled Express API app
+  let apiApp;
+  try {
+    apiApp = require('./apps/api/dist/index.js').default;
+    console.log('> Express API loaded successfully.');
+  } catch (e) {
+    console.error('> Failed to load Express API. Ensure it is built.', e.message);
+  }
+
   createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
+    
+    // Route API requests to the Express app
+    if (parsedUrl.pathname && parsedUrl.pathname.startsWith('/api') && apiApp) {
+      return apiApp(req, res);
+    }
+    
+    // Otherwise route to Next.js
     handle(req, res, parsedUrl);
   }).listen(port, (err) => {
     if (err) throw err;
