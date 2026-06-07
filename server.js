@@ -26,6 +26,7 @@ app.prepare().then(() => {
     
     // Route API requests to the Express app
     if (parsedUrl.pathname && parsedUrl.pathname.startsWith('/api') && apiApp) {
+      req.url = parsedUrl.path; // Normalize URL for Express
       return apiApp(req, res);
     }
     

@@ -393,6 +393,20 @@ async function ensureAdmin() {
 // Trigger auto-seed (runs once when Vercel or Node.js loads this module)
 ensureAdmin();
 
+// Global error handler to ensure JSON responses instead of HTML
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('[Express Error]', err.stack || err);
+    res.status(err.status || 500).json({
+        success: false,
+        error: err.message || 'Internal Server Error'
+    });
+});
+
+// Fallback 404 handler for unmatched routes
+app.use((req, res) => {
+    res.status(404).json({ success: false, error: `Route ${req.method} ${req.url} not found in API` });
+});
+
 // Export for Vercel and custom server
 export default app;
 
