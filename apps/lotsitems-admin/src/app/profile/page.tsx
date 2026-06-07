@@ -77,7 +77,7 @@ export default function ProfilePage() {
 
     const fetchProfile = () => {
         if (user?.email) {
-            fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/profile/${user.email}`)
+            fetch(`${'/api'}/profile/${user.email}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) setProfileData(data.user);
@@ -101,7 +101,7 @@ export default function ProfilePage() {
     }, [user]);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/marketplace/listings`)
+        fetch(`${'/api'}/marketplace/listings`)
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.listings) {
@@ -121,7 +121,7 @@ export default function ProfilePage() {
     const handleAcceptOffer = async (bidId: string) => {
         setIsAccepting(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/bids/${bidId}/accept`, {
+            const res = await fetch(`${'/api'}/bids/${bidId}/accept`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -140,7 +140,7 @@ export default function ProfilePage() {
     const handleRejectOffer = async (ticketId: string) => {
         setIsRejecting(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/tickets/${ticketId}/reject-offer`, {
+            const res = await fetch(`${'/api'}/tickets/${ticketId}/reject-offer`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -158,7 +158,7 @@ export default function ProfilePage() {
     const handleApproveVisit = async (ticketId: string) => {
         setIsApproving(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/tickets/${ticketId}/approve-visit`, {
+            const res = await fetch(`${'/api'}/tickets/${ticketId}/approve-visit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -180,7 +180,7 @@ export default function ProfilePage() {
 
     const handleDeletePaymentMethod = async (id: string) => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/profile/${user?.email}/payment-methods/${id}`, {
+            const res = await fetch(`${'/api'}/profile/${user?.email}/payment-methods/${id}`, {
                 method: 'DELETE'
             });
             const data = await res.json();
@@ -192,7 +192,7 @@ export default function ProfilePage() {
 
     const handleSetDefaultPaymentMethod = async (id: string) => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/profile/${user?.email}/payment-methods/${id}/default`, {
+            const res = await fetch(`${'/api'}/profile/${user?.email}/payment-methods/${id}/default`, {
                 method: 'PATCH'
             });
             const data = await res.json();
@@ -243,7 +243,7 @@ export default function ProfilePage() {
         }
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/profile/${user?.email}/payment-methods`, {
+            const res = await fetch(`${'/api'}/profile/${user?.email}/payment-methods`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -881,7 +881,7 @@ function TicketDetail({ ticket, onBack, onAcceptOffer, onRejectOffer, onApproveV
 
     useEffect(() => {
         if (ticket.id) {
-            fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/bids/ticket/${ticket.id}`)
+            fetch(`${'/api'}/bids/ticket/${ticket.id}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) setBids(data.bids);

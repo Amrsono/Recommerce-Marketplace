@@ -59,7 +59,7 @@ export default function KanbanCommandCenter() {
 
     const fetchTickets = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/tickets`);
+            const res = await fetch(`${'/api'}/tickets`);
             const data = await res.json();
             if (data.success && Array.isArray(data.tickets)) {
                 const formattedTickets = data.tickets.map((t: any) => {
@@ -83,8 +83,8 @@ export default function KanbanCommandCenter() {
         setDetailTicket({ ...ticket });
         try {
             const [ticketRes, bidsRes] = await Promise.all([
-                fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/tickets/${ticket.id}`),
-                fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/bids/ticket/${ticket.id}`),
+                fetch(`${'/api'}/tickets/${ticket.id}`),
+                fetch(`${'/api'}/bids/ticket/${ticket.id}`),
             ]);
             const ticketData = await ticketRes.json();
             const bidsData = await bidsRes.json();
@@ -117,7 +117,7 @@ export default function KanbanCommandCenter() {
     const updateStatus = async (ticketId: string, newStatus: Ticket['status']) => {
         setIsUpdating(ticketId);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/tickets/${ticketId}/status`, {
+            const res = await fetch(`${'/api'}/tickets/${ticketId}/status`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus }),
@@ -133,7 +133,7 @@ export default function KanbanCommandCenter() {
     const markArrived = async (ticketId: string) => {
         setIsUpdating(ticketId);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/tickets/${ticketId}/mark-arrived`, {
+            const res = await fetch(`${'/api'}/tickets/${ticketId}/mark-arrived`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
             });
@@ -169,7 +169,7 @@ export default function KanbanCommandCenter() {
     const toggleUrgency = async (ticketId: string, currentUrgency: boolean) => {
         setIsUpdating(ticketId);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/tickets/${ticketId}/status`, {
+            const res = await fetch(`${'/api'}/tickets/${ticketId}/status`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ isUrgent: !currentUrgency }),
@@ -187,7 +187,7 @@ export default function KanbanCommandCenter() {
         setIsUpdating(selectedTicketForSchedule.id);
         try {
             const dateTime = `${scheduleDate}T${scheduleTime}:00`;
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/tickets/${selectedTicketForSchedule.id}/status`, {
+            const res = await fetch(`${'/api'}/tickets/${selectedTicketForSchedule.id}/status`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ scheduledVisit: dateTime, visitStatus: 'PENDING' }),

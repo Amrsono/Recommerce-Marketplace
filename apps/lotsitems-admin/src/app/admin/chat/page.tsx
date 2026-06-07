@@ -19,7 +19,7 @@ export default function AdminChatDashboard() {
     // Fetch inbox
     const fetchInbox = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/chat/admin/inbox`);
+            const res = await fetch(`${'/api'}/chat/admin/inbox`);
             const data = await res.json();
             if (data.success) {
                 setInbox(data.tickets);
@@ -38,7 +38,7 @@ export default function AdminChatDashboard() {
     const fetchMessages = async () => {
         if (!activeTicketId) return;
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/chat/ticket/${activeTicketId}`);
+            const res = await fetch(`${'/api'}/chat/ticket/${activeTicketId}`);
             const data = await res.json();
             if (data.success) setMessages(data.messages);
         } catch (err) {
@@ -71,7 +71,7 @@ export default function AdminChatDashboard() {
         const activeTicket = inbox.find(t => t.id === activeTicketId);
         
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/chat/send`, {
+            const res = await fetch(`${'/api'}/chat/send`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -25,7 +25,7 @@ export default function MobileCameraPage({ params }: { params: Promise<{ session
         setStatus("uploading");
         try {
             const base64 = await fileToBase64(file);
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/devices/handoff/${sessionId}`, {
+            const res = await fetch(`${'/api'}/devices/handoff/${sessionId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ photoUrl: base64 }),

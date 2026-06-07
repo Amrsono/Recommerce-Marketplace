@@ -12,7 +12,7 @@ import {
     CheckCircle2, AlertTriangle, Loader2, Filter
 } from "lucide-react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || '/api';
+const API = '/api';
 
 const CONDITION_COLORS: Record<string, string> = {
     Mint: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",

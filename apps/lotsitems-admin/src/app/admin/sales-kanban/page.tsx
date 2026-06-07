@@ -62,7 +62,7 @@ export default function SalesKanbanCenter() {
 
     const fetchData = async () => {
         try {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api';
+            const apiBase = '/api';
             const [listingsRes, ordersRes] = await Promise.all([
                 fetch(`${apiBase}/marketplace/admin/listings`),
                 fetch(`${apiBase}/marketplace/admin/orders`)
@@ -91,7 +91,7 @@ export default function SalesKanbanCenter() {
     const updateOrderStatus = async (orderId: string, newStatus: Order['status']) => {
         setIsUpdating(orderId);
         try {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api';
+            const apiBase = '/api';
             const res = await fetch(`${apiBase}/marketplace/admin/orders/${orderId}/status`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
@@ -120,7 +120,7 @@ export default function SalesKanbanCenter() {
         if (!confirm(`Accept top bid of $${topBid.amount} from ${topBid.buyer?.name || topBid.buyer?.email}? This will create an order and close bidding.`)) return;
         setIsAccepting(listing.id);
         try {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api';
+            const apiBase = '/api';
             const res = await fetch(`${apiBase}/marketplace/listings/${listing.id}/accept-bid`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -144,7 +144,7 @@ export default function SalesKanbanCenter() {
         setDetailLoading(true);
         setSelectedItemDetail({ type: 'listing', item: listing });
         try {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || '/api';
+            const apiBase = '/api';
             const res = await fetch(`${apiBase}/marketplace/listings/${listing.id}`);
             const data = await res.json();
             if (data.success) {

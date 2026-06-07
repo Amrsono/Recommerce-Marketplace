@@ -52,7 +52,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`);
+        const res = await fetch(`/api/settings`);
         const data = await res.json();
         if (data.success && data.settings) {
           if (data.settings.AI_API_TOKEN) setApiKey(data.settings.AI_API_TOKEN);
@@ -91,7 +91,7 @@ export default function SettingsPage() {
     setIsLoadingToken(true);
     setMessageToken('');
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
+      const res = await fetch(`/api/settings`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: 'AI_API_TOKEN', value: apiKey }),
@@ -127,7 +127,7 @@ export default function SettingsPage() {
         { key: 'CONTACT_US_CONTENT_AR', val: pageContent.ar.contact },
       ];
 
-      const promises = keys.map(k => fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings`, {
+      const promises = keys.map(k => fetch(`/api/settings`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: k.key, value: k.val }),

@@ -29,7 +29,7 @@ export default function ChatInterface({ ticketId, receiverId }: ChatInterfacePro
     const fetchMessages = async () => {
         if (!ticketId) return;
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/chat/ticket/${ticketId}`);
+            const res = await fetch(`${'/api'}/chat/ticket/${ticketId}`);
             const data = await res.json();
             if (data.success) setMessages(data.messages);
         } catch (err) {
@@ -62,7 +62,7 @@ export default function ChatInterface({ ticketId, receiverId }: ChatInterfacePro
 
         setIsLoading(true);
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || '/api'}/chat/send`, {
+            const res = await fetch(`${'/api'}/chat/send`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
