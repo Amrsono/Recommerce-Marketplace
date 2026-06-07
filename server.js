@@ -15,7 +15,7 @@ app.prepare().then(() => {
   let apiApp;
   try {
     process.env.IS_HOSTINGER_SERVER = 'true';
-    apiApp = require('./apps/api/dist/index.js').default;
+    apiApp = require(path.join(__dirname, 'apps/api/dist/index.js')).default;
     console.log('> Express API loaded successfully.');
   } catch (e) {
     console.error('> Failed to load Express API. Ensure it is built.', e.message);
