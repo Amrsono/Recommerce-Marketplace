@@ -17,7 +17,7 @@
   },
   "scripts": {
     "postinstall": "npm run generate --workspace=database",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build --workspace=lotsitems-admin",
     "dev": "npm run dev --workspaces --parallel",
     "seed": "npm run seed --workspace=database"
   },
