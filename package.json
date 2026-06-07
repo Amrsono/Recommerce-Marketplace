@@ -19,7 +19,7 @@
   "scripts": {
     "postinstall": "npm run generate --workspace=database",
     "build": "npm run build --workspace=api && npm run build --workspace=lotsitems-admin",
-    "start": "npm run start --workspace=lotsitems-admin",
+    "start": "node server.js",
     "dev": "npm run dev --workspaces --parallel",
     "seed": "npm run seed --workspace=database"
   },
