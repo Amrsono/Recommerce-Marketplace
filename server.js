@@ -14,6 +14,7 @@ app.prepare().then(() => {
   // Import the compiled Express API app
   let apiApp;
   try {
+    process.env.IS_HOSTINGER_SERVER = 'true';
     apiApp = require('./apps/api/dist/index.js').default;
     console.log('> Express API loaded successfully.');
   } catch (e) {

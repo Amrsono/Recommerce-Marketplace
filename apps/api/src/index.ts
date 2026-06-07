@@ -393,11 +393,11 @@ async function ensureAdmin() {
 // Trigger auto-seed (runs once when Vercel or Node.js loads this module)
 ensureAdmin();
 
-// Export for Vercel
+// Export for Vercel and custom server
 export default app;
 
-// Only listen if not running on Vercel (Vercel handles the listener as a serverless function)
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+// Only listen if not running on Vercel or required by our custom server.js
+if (!process.env.VERCEL && !process.env.IS_HOSTINGER_SERVER) {
     app.listen(port, async () => {
         await ensureAdmin();
         console.log(`Lotsitems API is running on port ${port}`);
