@@ -404,8 +404,12 @@ async function ensureAdmin() {
     }
 }
 
-// Trigger auto-seed (runs once when Vercel or Node.js loads this module)
-ensureAdmin();
+// Trigger auto-seed asynchronously AFTER module is exported (non-blocking)
+// Delay ensures the app is fully exported before DB calls happen
+setTimeout(() => {
+    ensureAdmin().catch((e: any) => console.error('[Startup] ensureAdmin failed:', e.message));
+}, 2000);
+
 
 // Global error handler to ensure JSON responses instead of HTML
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

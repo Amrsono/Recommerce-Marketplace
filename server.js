@@ -10,32 +10,47 @@ const app = next({
 });
 const handle = app.getRequestHandler();
 
-app.prepare().then(() => {
-  // Import the compiled Express API app
-  let apiApp;
-  try {
-    process.env.IS_HOSTINGER_SERVER = 'true';
-    apiApp = require(path.join(__dirname, 'apps/api/dist/index.js')).default;
-    console.log('> Express API loaded successfully.');
-  } catch (e) {
-    console.error('> Failed to load Express API. Ensure it is built.', e.message);
+// Lazy-loaded API app - only loaded on first API request to reduce startup memory
+let apiApp = null;
+let apiLoadAttempted = false;
+
+function getApiApp() {
+  if (!apiLoadAttempted) {
+    apiLoadAttempted = true;
+    try {
+      process.env.IS_HOSTINGER_SERVER = 'true';
+      apiApp = require(path.join(__dirname, 'apps/api/dist/index.js')).default;
+      console.log('> Express API loaded successfully.');
+    } catch (e) {
+      console.error('> Failed to load Express API:', e.message);
+    }
   }
+  return apiApp;
+}
+
+app.prepare().then(() => {
+  console.log('> Next.js ready. Express API will load on first /api request.');
 
   createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
     const pathname = parsedUrl.pathname || '';
-    
-    console.log(`[Server] ${req.method} ${req.url} -> pathname: ${pathname} apiApp: ${!!apiApp}`);
-    
-    // Route API requests to the Express app
-    if (pathname.startsWith('/api') && apiApp) {
-      req.url = parsedUrl.path || req.url; // Normalize URL for Express
-      console.log(`[Server] Routing to Express: ${req.method} ${req.url}`);
-      return apiApp(req, res);
+
+    // Route API requests to Express
+    if (pathname.startsWith('/api')) {
+      const expressApp = getApiApp();
+      if (expressApp) {
+        req.url = parsedUrl.path || req.url;
+        console.log(`[API] ${req.method} ${req.url}`);
+        return expressApp(req, res);
+      } else {
+        console.error('[API] Express app not available');
+        res.writeHead(503, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: 'API not available - check server logs' }));
+        return;
+      }
     }
-    
-    // Otherwise route to Next.js
-    console.log(`[Server] Routing to Next.js: ${req.method} ${pathname}`);
+
+    // All other requests go to Next.js
     handle(req, res, parsedUrl);
   }).listen(port, (err) => {
     if (err) throw err;
