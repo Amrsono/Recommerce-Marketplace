@@ -17,10 +17,10 @@ async function main() {
         return;
     }
 
-    let seller = await prisma.user.findFirst({ where: { email: 'demo-seller@lotsitems.com' } });
+    let seller = await prisma.user.findFirst({ where: { email: 'demo-seller@makeuse.com' } });
     if (!seller) {
         seller = await prisma.user.create({
-            data: { email: 'demo-seller@lotsitems.com', name: 'Demo Seller', role: 'CUSTOMER', password: 'demo' }
+            data: { email: 'demo-seller@makeuse.com', name: 'Demo Seller', role: 'CUSTOMER', password: 'demo' }
         });
         console.log('Created seller: ' + seller.id);
     }

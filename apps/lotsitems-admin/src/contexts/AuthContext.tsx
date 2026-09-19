@@ -42,42 +42,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
         checkConnectivity();
 
-        // Migration: Migrate legacy recommerce/makeuse/used4cash keys to lotsitems
+        // Migration: Migrate legacy recommerce/lotsitems/used4cash keys to makeuse
         const legacyRecommerceUser = localStorage.getItem("recommerce_user");
         const legacyRecommerceToken = localStorage.getItem("recommerce_token");
-        const legacyMakeuseUser = localStorage.getItem("makeuse_user");
-        const legacyMakeuseToken = localStorage.getItem("makeuse_token");
+        const legacyLotsitemsUser = localStorage.getItem("lotsitems_user");
+        const legacyLotsitemsToken = localStorage.getItem("lotsitems_token");
         const legacyUsed4cashUser = localStorage.getItem("used4cash_user");
         const legacyUsed4cashToken = localStorage.getItem("used4cash_token");
 
-        if (legacyRecommerceUser && legacyRecommerceToken) {
-            localStorage.setItem("lotsitems_user", legacyRecommerceUser);
-            localStorage.setItem("lotsitems_token", legacyRecommerceToken);
+        if (legacyLotsitemsUser && legacyLotsitemsToken) {
+            localStorage.setItem("makeuse_user", legacyLotsitemsUser);
+            localStorage.setItem("makeuse_token", legacyLotsitemsToken);
+            localStorage.removeItem("lotsitems_user");
+            localStorage.removeItem("lotsitems_token");
+        } else if (legacyRecommerceUser && legacyRecommerceToken) {
+            localStorage.setItem("makeuse_user", legacyRecommerceUser);
+            localStorage.setItem("makeuse_token", legacyRecommerceToken);
             localStorage.removeItem("recommerce_user");
             localStorage.removeItem("recommerce_token");
-        } else if (legacyMakeuseUser && legacyMakeuseToken) {
-            localStorage.setItem("lotsitems_user", legacyMakeuseUser);
-            localStorage.setItem("lotsitems_token", legacyMakeuseToken);
-            localStorage.removeItem("makeuse_user");
-            localStorage.removeItem("makeuse_token");
         } else if (legacyUsed4cashUser && legacyUsed4cashToken) {
-            localStorage.setItem("lotsitems_user", legacyUsed4cashUser);
-            localStorage.setItem("lotsitems_token", legacyUsed4cashToken);
+            localStorage.setItem("makeuse_user", legacyUsed4cashUser);
+            localStorage.setItem("makeuse_token", legacyUsed4cashToken);
             localStorage.removeItem("used4cash_user");
             localStorage.removeItem("used4cash_token");
         }
 
         // Hydrate auth state from localStorage
-        const storedUser = localStorage.getItem("lotsitems_user");
-        const storedToken = localStorage.getItem("lotsitems_token");
+        const storedUser = localStorage.getItem("makeuse_user");
+        const storedToken = localStorage.getItem("makeuse_token");
 
         if (storedUser && storedToken) {
             try {
                 setUser(JSON.parse(storedUser));
             } catch (e) {
                 console.error("Failed to parse stored user", e);
-                localStorage.removeItem("lotsitems_user");
-                localStorage.removeItem("lotsitems_token");
+                localStorage.removeItem("makeuse_user");
+                localStorage.removeItem("makeuse_token");
             }
         }
         setIsLoading(false);
@@ -96,8 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (data.success) {
                 const userData = data.user;
                 setUser(userData);
-                localStorage.setItem("lotsitems_user", JSON.stringify(userData));
-                localStorage.setItem("lotsitems_token", data.token);
+                localStorage.setItem("makeuse_user", JSON.stringify(userData));
+                localStorage.setItem("makeuse_token", data.token);
 
                 const dest = userData.role === "ADMIN" ? "/" : (userData.role === "VENDOR" ? "/vendor" : (redirectTo || "/profile"));
                 router.push(dest);
@@ -123,8 +123,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (data.success) {
                 const userData = data.user;
                 setUser(userData);
-                localStorage.setItem("lotsitems_user", JSON.stringify(userData));
-                localStorage.setItem("lotsitems_token", data.token);
+                localStorage.setItem("makeuse_user", JSON.stringify(userData));
+                localStorage.setItem("makeuse_token", data.token);
 
                 const dest = userData.role === "ADMIN" ? "/" : (userData.role === "VENDOR" ? "/vendor" : (redirectTo || "/assess"));
                 router.push(dest);
@@ -139,8 +139,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = async () => {
         setUser(null);
-        localStorage.removeItem("lotsitems_user");
-        localStorage.removeItem("lotsitems_token");
+        localStorage.removeItem("makeuse_user");
+        localStorage.removeItem("makeuse_token");
         router.push("/");
     };
 

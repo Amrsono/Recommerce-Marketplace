@@ -1,6 +1,6 @@
-# 🚀 Lotsitems VPS Deployment Guide
+# 🚀 Make Use VPS Deployment Guide
 
-> This guide documents the complete process for deploying the Lotsitems Marketplace
+> This guide documents the complete process for deploying the Make Use Marketplace
 > to a VPS (Virtual Private Server), including the one-time setup, how auto-deploy
 > works, and how to deploy manually if needed. All terminal commands are written
 > for **PowerShell (Windows)**.
@@ -13,7 +13,7 @@
 Internet
    │
    ▼
-lotsitems.com (port 80)
+makeuse.com (port 80)
    │
    ▼
 Nginx (reverse proxy)

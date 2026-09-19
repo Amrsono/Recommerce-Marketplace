@@ -15,10 +15,10 @@ import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 
 const STORES = [
-    { id: "store-1", name: "Lotsitems — City Centre", address: "14 Market Street, London, EC2V 8DY", distance: "0.4 mi", hours: "Mon–Sat 9am–6pm" },
-    { id: "store-2", name: "Lotsitems — East End",    address: "82 Whitechapel Rd, London, E1 1JX",  distance: "1.2 mi", hours: "Mon–Sat 10am–7pm" },
-    { id: "store-3", name: "Lotsitems — South Bank",  address: "5 Bankside Walk, London, SE1 9PP",    distance: "1.9 mi", hours: "Mon–Sun 10am–6pm" },
-    { id: "store-4", name: "Lotsitems — West End",    address: "201 Oxford Street, London, W1D 2LJ",  distance: "2.3 mi", hours: "Mon–Sat 9am–8pm" },
+    { id: "store-1", name: "Make Use — City Centre", address: "14 Market Street, London, EC2V 8DY", distance: "0.4 mi", hours: "Mon–Sat 9am–6pm" },
+    { id: "store-2", name: "Make Use — East End",    address: "82 Whitechapel Rd, London, E1 1JX",  distance: "1.2 mi", hours: "Mon–Sat 10am–7pm" },
+    { id: "store-3", name: "Make Use — South Bank",  address: "5 Bankside Walk, London, SE1 9PP",    distance: "1.9 mi", hours: "Mon–Sun 10am–6pm" },
+    { id: "store-4", name: "Make Use — West End",    address: "201 Oxford Street, London, W1D 2LJ",  distance: "2.3 mi", hours: "Mon–Sat 9am–8pm" },
 ];
 
 const FALLBACK_MODELS: Record<string, string[]> = {

@@ -8,13 +8,13 @@ import 'core/localization/translations.dart';
 void main() {
   runApp(
     const ProviderScope(
-      child: LotsitemsApp(),
+      child: MakeUseApp(),
     ),
   );
 }
 
-class LotsitemsApp extends ConsumerWidget {
-  const LotsitemsApp({super.key});
+class MakeUseApp extends ConsumerWidget {
+  const MakeUseApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,9 +40,9 @@ class LotsitemsApp extends ConsumerWidget {
     }
 
     return MaterialApp(
-      title: 'Lotsitems',
-      theme: LotsitemsTheme.lightTheme,
-      darkTheme: LotsitemsTheme.darkTheme,
+      title: 'Make Use',
+      theme: MakeUseTheme.lightTheme,
+      darkTheme: MakeUseTheme.darkTheme,
       themeMode: ThemeMode.system,
       locale: flutterLocale,
       supportedLocales: const [

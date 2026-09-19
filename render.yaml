@@ -1,16 +1,16 @@
-# Render Blueprint – Lotsitems Marketplace
+# Render Blueprint – Make Use Marketplace
 # https://docs.render.com/blueprint-spec
 
 databases:
-  - name: lotsitems-db
+  - name: makeuse-db
     plan: free
-    databaseName: lotsitems
-    user: lotsitems
+    databaseName: makeuse
+    user: makeuse
 
 services:
   # ── Express API ──────────────────────────────────────────
   - type: web
-    name: lotsitems-api
+    name: makeuse-api
     runtime: node
     plan: free
     rootDir: .
@@ -25,17 +25,17 @@ services:
         value: production
       - key: DATABASE_URL
         fromDatabase:
-          name: lotsitems-db
+          name: makeuse-db
           property: connectionString
       - key: CORS_ORIGIN
-        value: "https://lotsitems-web.onrender.com" # Should match the web-admin service URL
+        value: "https://makeuse-web.onrender.com" # Should match the web-admin service URL
 
   # ── Next.js Frontend ────────────────────────────────────
   - type: web
-    name: lotsitems-web
+    name: makeuse-web
     runtime: node
     plan: free
-    rootDir: apps/web-admin
+    rootDir: apps/lotsitems-admin
     buildCommand: npm install && npm run build
     startCommand: npm run start
     healthCheckPath: /
@@ -43,4 +43,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_URL
-        value: "https://lotsitems-api.onrender.com/api"
+        value: "https://makeuse-api.onrender.com/api"

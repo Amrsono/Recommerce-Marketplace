@@ -6,14 +6,14 @@ This document summarizes the steps to migrate the Web and API apps to Vercel usi
 
 You need to create two separate projects in Vercel. Both will point to the same GitHub repository.
 
-### Project A: `lotsitems-web` (Frontend)
+### Project A: `makeuse-web` (Frontend)
 1.  **Import** the repository in Vercel.
-2.  **Project Name**: `lotsitems-web`
+2.  **Project Name**: `makeuse-web`
 3.  **Root Directory**: `apps/lotsitems-admin` (Important!)
 4.  **Framework Preset**: `Next.js`
 5.  **Build Command**: `npm run build`
 6.  **Environment Variables**:
-    *   `NEXT_PUBLIC_API_URL`: The URL of Project B (e.g., `https://lotsitems-api.vercel.app/api`)
+    *   `NEXT_PUBLIC_API_URL`: The URL of Project B (e.g., `https://makeuse-api.vercel.app/api`)
     *   `DATABASE_URL`: Your Neon/Postgres connection string (Required for `prisma generate`)
 
 ---
@@ -26,9 +26,9 @@ To prevent the "Prisma schema not found" error during build:
 
 ---
 
-### Project B: `lotsitems-api` (Backend)
+### Project B: `makeuse-api` (Backend)
 1.  **Import** the repository again in Vercel.
-2.  **Project Name**: `lotsitems-api`
+2.  **Project Name**: `makeuse-api`
 3.  **Root Directory**: `apps/api` (Important!)
 4.  **Framework Preset**: `Other` (Vercel will detect `vercel.json`)
 5.  **Build Command**: `npm run build`
@@ -43,7 +43,7 @@ To prevent the "Prisma schema not found" error during build:
 1.  In the Vercel Dashboard, go to the **Storage** tab.
 2.  Click **Create** > **Postgres**.
 3.  Choose a region close to you.
-4.  **Connect** the database to **both** `lotsitems-web` and `lotsitems-api` projects. This automatically injects the `POSTGRES_*` environment variables.
+4.  **Connect** the database to **both** `makeuse-web` and `makeuse-api` projects. This automatically injects the `POSTGRES_*` environment variables.
 
 ---
 

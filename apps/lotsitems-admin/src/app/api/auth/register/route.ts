@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'lotsitems_secret_key_change_me';
+const JWT_SECRET = process.env.JWT_SECRET || 'makeuse_secret_key_change_me';
 
 export async function POST(request: NextRequest) {
     try {

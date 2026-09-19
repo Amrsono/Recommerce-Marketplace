@@ -11,15 +11,15 @@ To run multiple independent projects on the same VPS, we use a modular, isolated
 ```mermaid
 graph TD
     Client[Incoming Request] -->|Port 80/443| Nginx{Nginx Reverse Proxy}
-    Nginx -->|lotsitems.com| NextJS1[lotsitems Next.js - Port 3000]
-    Nginx -->|lotsitems.com/api| Express1[lotsitems Express - Port 5000]
+    Nginx -->|makeuse.com| NextJS1[makeuse Next.js - Port 3000]
+    Nginx -->|makeuse.com/api| Express1[makeuse Express - Port 5000]
     Nginx -->|anotherproject.com| NextJS2[project2 Next.js - Port 3001]
     Nginx -->|anotherproject.com/api| Express2[project2 Express - Port 5001]
 ```
 
 ### 1. Isolated File Structure `/var/www/`
 Each project has its own dedicated folder in the `/var/www/` directory to prevent file conflicts:
-* `/var/www/recommerce-marketplace/` (This project - Lotsitems)
+* `/var/www/recommerce-marketplace/` (This project - Make Use)
 * `/var/www/another-project/` (Future project)
 * `/var/www/third-project/` (Future project)
 

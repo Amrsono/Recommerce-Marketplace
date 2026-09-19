@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "lotsitems-api",
+      name: "makeuse-api",
       cwd: "/var/www/recommerce-marketplace/apps/api",
       script: "dist/index.js",
       instances: 1,
@@ -14,7 +14,7 @@ module.exports = {
       }
     },
     {
-      name: "lotsitems-web",
+      name: "makeuse-web",
       cwd: "/var/www/recommerce-marketplace/apps/lotsitems-admin",
       script: "node_modules/next/dist/bin/next",
       args: "start -p 3000",
@@ -26,7 +26,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: 3000,
-        NEXT_PUBLIC_API_URL: "http://lotsitems.com/api"
+        NEXT_PUBLIC_API_URL: "http://makeuse.com/api"
       }
     }
   ]

@@ -193,11 +193,11 @@ router.post('/seed', async (req, res) => {
         }
 
         // Get or create a demo seller user
-        let seller = await prisma.user.findFirst({ where: { email: 'demo-seller@lotsitems.com' } });
+        let seller = await prisma.user.findFirst({ where: { email: 'demo-seller@makeuse.com' } });
         if (!seller) {
             seller = await prisma.user.create({
                 data: {
-                    email: 'demo-seller@lotsitems.com',
+                    email: 'demo-seller@makeuse.com',
                     name: 'Demo Seller',
                     role: 'CUSTOMER',
                     password: 'demo',

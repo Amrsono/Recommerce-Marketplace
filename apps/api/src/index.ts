@@ -197,7 +197,7 @@ app.post('/api/setup/ensure-admin', async (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', service: 'lotsitems-api' });
+    res.json({ status: 'ok', service: 'makeuse-api' });
 });
 
 app.patch('/api/tickets/:id/status', async (req, res) => {
@@ -432,6 +432,6 @@ export default app;
 if (!process.env.VERCEL && !process.env.IS_HOSTINGER_SERVER) {
     app.listen(port, async () => {
         await ensureAdmin();
-        console.log(`Lotsitems API is running on port ${port}`);
+        console.log(`Make Use API is running on port ${port}`);
     });
 }

@@ -87,7 +87,7 @@ export default function AboutPage() {
                         <h2 className="text-4xl font-bold text-white mb-6 leading-tight">{t("aboutProblemTitle") || "The problem we're solving"}</h2>
                         <div className="space-y-4 text-slate-400 leading-relaxed text-lg">
                             <p>{t("aboutProblemDesc1") || "The secondary electronics market is broken. Marketplaces are flooded with fraud, buyers lowball, and sellers are left feeling robbed."}</p>
-                            <p>{t("aboutProblemDesc2") || "We built Lotsitems on a fundamentally different principle: let the market decide the price — transparently, in real time, with no room for manipulation."}</p>
+                            <p>{t("aboutProblemDesc2") || "We built Make Use on a fundamentally different principle: let the market decide the price — transparently, in real time, with no room for manipulation."}</p>
                             <p>{t("aboutProblemDesc3") || "Our AI establishes a fair baseline. Then verified vendors compete. The seller chooses the best offer. Our engineers verify the device. Everyone wins."}</p>
                         </div>
                         <Link href="/offer" className="inline-flex items-center gap-2 mt-8 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full font-semibold transition-all shadow-lg shadow-blue-600/20">
@@ -139,7 +139,7 @@ export default function AboutPage() {
 
             <section className="container mx-auto px-6 py-24 border-t border-slate-800/50">
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl font-bold text-white mb-4">{t("aboutTeamTitle") || "The people behind Lotsitems"}</h2>
+                    <h2 className="text-4xl font-bold text-white mb-4">{t("aboutTeamTitle") || "The people behind Make Use"}</h2>
                     <p className="text-slate-400 text-lg max-w-xl mx-auto">{t("aboutTeamSubtitle") || "A lean, ambitious team on a mission to make electronics resale radically fair."}</p>
                 </div>
                 <div className="flex flex-col md:flex-row gap-6 justify-center max-w-3xl mx-auto">

@@ -9,7 +9,7 @@ import ThemeBody from "@/components/ThemeBody";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Lotsitems: Don't trash it, cash it",
+  title: "Make Use: Don't trash it, cash it",
   description: "AI-Powered Electronics Marketplace - Get instant cash for your old devices.",
 };
 

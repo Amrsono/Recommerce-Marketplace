@@ -27,7 +27,7 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
             <aside className="w-full md:w-64 bg-slate-900 border-r border-slate-800 flex flex-col p-4">
                 <div className="flex items-center gap-3 mb-8 px-2">
                     <div className="relative w-8 h-8 overflow-hidden rounded-md border border-slate-700 bg-slate-950">
-                        <Image src="/logo.png" alt="Lotsitems B2B" fill className="object-contain" />
+                        <Image src="/logo.png" alt="Make Use B2B" fill className="object-contain" />
                     </div>
                     <span className="font-bold text-xl tracking-tight">{t("vendorBrand")}</span>
                 </div>

@@ -280,7 +280,7 @@ export default function ProfilePage() {
                         <div className="relative w-8 h-8 overflow-hidden rounded-md border border-slate-700 bg-slate-950">
                             <Image 
                                 src="/logo.png" 
-                                alt="Lotsitems Logo" 
+                                alt="Make Use Logo" 
                                 fill 
                                 className="object-contain"
                             />

@@ -362,7 +362,7 @@ export default function MarketplacePage() {
                         <div className="relative w-8 h-8 overflow-hidden rounded-md border border-slate-700 bg-slate-950">
                             <Image src="/logo.png" alt="Logo" fill className="object-contain" />
                         </div>
-                        <span className="font-bold text-lg text-white">Lotsitems</span>
+                        <span className="font-bold text-lg text-white">Make Use</span>
                     </Link>
 
                     <div className="flex items-center gap-3">

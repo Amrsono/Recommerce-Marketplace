@@ -13,7 +13,7 @@ export default function ContactPage() {
     const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
 
     const contactMethods = [
-        { icon: Mail, title: t("contactEmailUs") || "Email Us", value: "hello@lotsitems.com", desc: t("contactEmailUsDesc") || "We typically reply within 2 hours.", color: "blue" },
+        { icon: Mail, title: t("contactEmailUs") || "Email Us", value: "hello@makeuse.app", desc: t("contactEmailUsDesc") || "We typically reply within 2 hours.", color: "blue" },
         { icon: Phone, title: t("contactCallUs") || "Call Us", value: "+971 4 123 4567", desc: t("contactCallUsDesc") || "Sun–Thu, 9am – 6pm GST.", color: "purple" },
         { icon: MapPin, title: t("contactOffice") || "Our Office", value: "Dubai, UAE", desc: t("contactOfficeDesc") || "MENA HQ — Downtown Dubai.", color: "emerald" },
     ];

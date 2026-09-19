@@ -19,7 +19,7 @@ class MainSelectionScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          t('appTitle') ?? 'Lotsitems',
+          t('appTitle') ?? 'Make Use',
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),

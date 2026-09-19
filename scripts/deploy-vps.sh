@@ -4,7 +4,7 @@
 set -e
 
 echo "=================================================="
-echo "Starting Lotsitems Marketplace Deployment..."
+echo "Starting Make Use Marketplace Deployment..."
 echo "=================================================="
 
 # Navigate to the project root directory
@@ -34,7 +34,7 @@ npm run build
 
 # 6. Restart applications using PM2
 echo ">>> Reloading PM2 applications..."
-if pm2 describe lotsitems-api > /dev/null 2>&1; then
+if pm2 describe makeuse-api > /dev/null 2>&1; then
     echo "PM2 processes exist. Reloading..."
     pm2 reload scripts/pm2.config.js --env production
 else

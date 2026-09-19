@@ -16,14 +16,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Load locale from localStorage on client mount
   useEffect(() => {
-    const storedLocale = (localStorage.getItem('lotsitems_locale') || localStorage.getItem('used4cash_locale')) as Locale;
+    const storedLocale = (localStorage.getItem('makeuse_locale') || localStorage.getItem('lotsitems_locale') || localStorage.getItem('used4cash_locale')) as Locale;
     if (storedLocale && translations[storedLocale]) {
       setLocaleState(storedLocale);
-      // Clean up legacy key if it existed
-      if (localStorage.getItem('used4cash_locale')) {
-        localStorage.setItem('lotsitems_locale', storedLocale);
-        localStorage.removeItem('used4cash_locale');
-      }
+      // Save and clean up legacy keys
+      localStorage.setItem('makeuse_locale', storedLocale);
+      localStorage.removeItem('lotsitems_locale');
+      localStorage.removeItem('used4cash_locale');
     }
   }, []);
 
@@ -38,7 +37,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
-    localStorage.setItem('lotsitems_locale', newLocale);
+    localStorage.setItem('makeuse_locale', newLocale);
   };
 
   const t = (key: keyof TranslationDictionary): string => {
